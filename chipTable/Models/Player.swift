@@ -10,14 +10,17 @@ import MultipeerConnectivity
 import SwiftUI
 
 class Player: NSObject, ObservableObject, Identifiable {
-    var name: String
+    @Published var name: String
     let id = UUID().uuidString
-    let peerId: MCPeerID?
+    var peerId: MCPeerID?
     @Published var currentBet: Int
     @Published  var isMyTurn = false
     var folded = false
     @Published var chipsRemaining: Int
     var orderIndex = 0
+
+    
+    var chips = [Chip]()
 
     @Published var color: Color
     
@@ -101,12 +104,13 @@ struct PlayerInfoToTransfer: Codable {
         chipsRemaining = player.chipsRemaining
     }
     
-    init(gameState: GameState, chipsRemaining: Int, currentBet: Int, currentPlayer: String, currentBetOnTable: Int) {
+    init(gameState: GameState, chipsRemaining: Int, currentBet: Int, currentPlayer: String, currentBetOnTable: Int, color: String) {
         self.gameState = gameState
         self.chipsRemaining = chipsRemaining
         self.currentBet = currentBet
         self.currentPlaterName = currentPlayer
         self.currentBetOnTable = currentBetOnTable
+        self.color = color
     }
     
     func getColor()->Color {
@@ -123,6 +127,13 @@ class PlayerGame: NSObject, ObservableObject {
     var gameState: GameState
     
     @Published var isYourTurn = false
+    
+    @Published var chipsOnTable = [[Chip]]()
+    @Published var rowCounter = 0
+    
+    //list of players for when we disconnect
+    @Published var players: [String]?
+
     
     //mulipeer connectivity
     private let serviceType = "chipTable-serv"
@@ -147,6 +158,8 @@ class PlayerGame: NSObject, ObservableObject {
         super.init()
         
         browsForTables()
+        
+        setUpChipsUI()
     }
     deinit {
         serviceBrowser.stopBrowsingForPeers()
@@ -175,8 +188,9 @@ class PlayerGame: NSObject, ObservableObject {
     }
     
     func sendChips() {
+        setUpChipsUI()
         do {
-            if player.currentBet >= currentBetOnTable {
+            if player.currentBet >= currentBetOnTable || player.folded{
                 currentBetOnTable = player.currentBet
                 var transfer = PlayerInfoToTransfer(player: player)
                 transfer.currentBetOnTable = currentBetOnTable
@@ -189,7 +203,24 @@ class PlayerGame: NSObject, ObservableObject {
             print("Couldnt send data!")
         }
     }
-    
+    func setUpChipsUI() {
+        chipsOnTable.removeAll()
+        rowCounter = -1
+        for i in 0..<player.chipsRemaining {
+            if i%10 == 0 {
+                chipsOnTable.append([Chip(color: player.color)])
+                rowCounter += 1
+            }else {
+                chipsOnTable[rowCounter].append(Chip(color: player.color))
+            }
+        }
+    }
+    func getRowCount()->Int {
+        if player.chipsRemaining%10 == 0 {
+            return player.chipsRemaining/10
+        }
+        return (player.chipsRemaining/10) + 1
+    }
     func fold() {
         player.folded = true
         sendChips()
@@ -242,8 +273,11 @@ extension PlayerGame: MCSessionDelegate {
                 self.currentBetOnTable = playerData.currentBetOnTable ?? 0
                 if self.gameState == .yourTurn {
                     self.isYourTurn = true
+                } else {
+                    self.isYourTurn = false
                 }
                 print("Chips Remaining! \(self.player.chipsRemaining)")
+                self.setUpChipsUI()
             }
         }
         catch {

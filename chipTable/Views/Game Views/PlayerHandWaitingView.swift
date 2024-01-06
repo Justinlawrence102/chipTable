@@ -11,6 +11,25 @@ struct PlayerHandWaitingView: View {
     @ObservedObject var playerGame: PlayerGame
     var body: some View {
         ZStack {
+            VStack {
+                Spacer()
+                HStack(spacing: 20.0) {
+                    ForEach(0..<playerGame.getRowCount())
+                    { i in
+                        VStack(spacing: -61.0)
+                        {
+                            ForEach(playerGame.chipsOnTable[i]) {
+                                chip in
+                                ChipView(color: chip.color)
+                            }
+                            Spacer()
+                        }
+                        .environment(\.layoutDirection, .rightToLeft)
+                        .rotationEffect(Angle(degrees: 180))
+                    }.id(playerGame.rowCounter)
+                }
+            }
+            
             VStack(spacing: 16.0){
                 Text("Current Bet")
                     .font(Font.system(size: 24, weight: .semibold))

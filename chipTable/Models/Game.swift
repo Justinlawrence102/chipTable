@@ -9,17 +9,43 @@ import Foundation
 import SwiftUI
 import MultipeerConnectivity
 
+class Chip: ObservableObject, Identifiable{
+    var color: Color
+    let id = UUID().uuidString
+    var x, y: Int
+    
+    init() {
+        color = Color("Red Chip")
+        x = 0
+        y = 0
+    }
+    
+    init(color: Color) {
+        self.color = color
+        x = Int.random(in: 0..<750)
+        y = Int.random(in: 0..<350)
+    }
+}
+
 class Game: NSObject, ObservableObject {
     @Published var players: [Player]
+    @Published var chips: [Chip]
     @Published var name: String
     var dealerIndex: Int
-    var round = 0
+    @Published var round = 0
     var minBet = 2
     var requireBigLittle = true
     var increaseMaxBet = true
     var startingChipCount = ""
     var currentBetOnTable = 0
     private var currentPlayerIndex: Int
+    private var currentBettingLeaderIndex = 0
+    private var roundJustStarted = true //used to set first player
+    private var startingPlayerIndex = 0
+    @Published var bettingRoundOver = false
+    
+    @Published var showingWinnerSelectModal = false
+    
     
     //mulipeer connectivity
     private let serviceType = "chipTable-serv"
@@ -32,7 +58,8 @@ class Game: NSObject, ObservableObject {
     
     override init() {
         
-        players = [] //[Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow)] //, Player(name: "Nicole", color: .purple)
+        players = [] //[Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow), Player(name: "Nicole", color: .purple)]
+        chips = []
         name = ""
         dealerIndex = 0
         currentPlayerIndex = 0
@@ -57,27 +84,19 @@ class Game: NSObject, ObservableObject {
     func isPlayingNow(player: Player) -> Bool {
         return currentPlayerIndex == player.orderIndex
     }
-    func currentPlayers()-> [Player] {
+    func playersWithChips()-> [Player] {
         return players.filter({$0.chipsRemaining > 0})
     }
     func isDealer(player: Player)->Bool {
         return player.orderIndex == dealerIndex
     }
-    func isSmallBlind(player: Player)->Bool {
-        if requireBigLittle {
-            if (dealerIndex+1 < currentPlayers().count && player.orderIndex == dealerIndex + 1) || (dealerIndex + 1 >= currentPlayers().count && player.orderIndex == dealerIndex + 1 - currentPlayers().count) {
-                return true
-            }
+    
+    func selectWinner(player: Player) {
+        var totalChipsOnTable = 0
+        for player in players {
+            totalChipsOnTable += player.currentBet
         }
-        return false
-    }
-    func isLargeBlind(player: Player)->Bool {
-        if requireBigLittle {
-            if (dealerIndex+2 < players.count && player.orderIndex == dealerIndex + 2) || (dealerIndex + 2 >= currentPlayers().count && player.orderIndex == dealerIndex + 2 - currentPlayers().count) {
-                return true
-            }
-        }
-        return false
+        players[player.orderIndex].chipsRemaining += totalChipsOnTable
     }
     
     func advertiseTableToPlayers() {
@@ -99,46 +118,85 @@ class Game: NSObject, ObservableObject {
     }
     
     func goToNextRound() {
-        dealerIndex += 1
-        if dealerIndex == currentPlayers().count {
-            dealerIndex = 0
+        round += 1
+        currentBetOnTable = 0
+        chips = []
+        minBet = (players.count - playersWithChips().count + 1)*2
+        while(true) {
+            dealerIndex += 1
+            if dealerIndex == players.count {
+                dealerIndex = 0
+            }
+            if players[dealerIndex].chipsRemaining > 0 || playersWithChips().count <= 1 {
+                break
+            }
         }
-        //configure who is up and who has initail bets
-        if requireBigLittle {
-            currentPlayerIndex = dealerIndex + 3
-            currentBetOnTable = minBet
-        } else {
-            currentPlayerIndex = dealerIndex + 1
-        }
-        if (currentPlayerIndex >= currentPlayers().count) {
-            currentPlayerIndex = currentPlayerIndex-currentPlayers().count
+        //Reset min bets
+        for player in players {
+            player.currentBet = 0
+            player.folded = false
         }
         
-        //configure min bets
-        for player in players {
-            if isSmallBlind(player: player) {
-                player.currentBet = minBet/2
-                player.chipsRemaining -= player.currentBet
+        var gaveLargeBlind = false
+        var gaveSmallBlind = false
+        var foundFirstPlayer = false
+        var i = dealerIndex + 1
+        while(!gaveLargeBlind || !gaveSmallBlind || !foundFirstPlayer) {
+            if (i >= players.count) {
+                i = 0
             }
-            else if isLargeBlind(player: player) {
-                player.currentBet = minBet
-                player.chipsRemaining -= player.currentBet
-            }else {
-                player.currentBet = 0
+            if players[i].chipsRemaining > 0 {
+                if !gaveSmallBlind {
+                    players[i].currentBet = minBet/2
+                    addChipsToTable(count: minBet/2, color: players[i].color)
+                    players[i].chipsRemaining -= players[i].currentBet
+                    gaveSmallBlind = true
+                }else if !gaveLargeBlind{
+                    players[i].currentBet = minBet
+                    currentBetOnTable = minBet
+                    addChipsToTable(count: minBet, color: players[i].color)
+                    currentBettingLeaderIndex = i
+//                    currentPlayerIndex = i + 1
+                    players[i].chipsRemaining -= players[i].currentBet
+                    gaveLargeBlind = true
+                }else if !foundFirstPlayer {
+                    foundFirstPlayer = true
+                    currentPlayerIndex = i
+                    startingPlayerIndex = i
+                }
             }
-            sendData()
+            i += 1
         }
+        sendData()
     }
     
     func nextPlayersTurn() {
-        currentPlayerIndex += 1
-        if currentPlayers().count <= 1 {
+        if playersWithChips().count <= 1 {
             print("There is a winner!")
             return
         }
-        if (currentPlayerIndex >= currentPlayers().count) {
-            currentPlayerIndex = currentPlayerIndex-currentPlayers().count
+        
+        currentPlayerIndex += 1
+
+        if (currentPlayerIndex >= players.count) {
+            currentPlayerIndex = currentPlayerIndex-players.count
         }
+        
+        //check if everyone has gone and added their bet
+        if currentPlayerIndex == currentBettingLeaderIndex && !roundJustStarted {
+            print("ROUND IS OVER!")
+            bettingRoundOver = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                self.bettingRoundOver = false
+                self.currentPlayerIndex = self.startingPlayerIndex - 1
+                self.currentBettingLeaderIndex = self.startingPlayerIndex
+                self.nextPlayersTurn()
+                self.roundJustStarted = true
+            }
+            return
+        }
+        roundJustStarted = false
+        
         if getCurrentPlayer().folded {
             nextPlayersTurn()
             return
@@ -149,14 +207,18 @@ class Game: NSObject, ObservableObject {
         }
         sendData()
     }
-    
+    func addChipsToTable(count: Int, color: Color) {
+        for _ in 0..<count {
+            chips.append(Chip(color: color))
+        }
+    }
     func sendData() {
         for player in players {
             player.isMyTurn = false
             if isPlayingNow(player: player) {
                 player.isMyTurn = true
             }
-            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: getCurrentPlayer().name, currentBetOnTable: currentBetOnTable)
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: getCurrentPlayer().name, currentBetOnTable: currentBetOnTable, color: player.getColorString())
             if (currentPlayerIndex == player.orderIndex) {
                 gameDataToTransfer.gameState = .yourTurn
             }
@@ -207,11 +269,27 @@ extension Game: MCSessionDelegate {
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
         do {
             let playerData = try JSONDecoder().decode(PlayerInfoToTransfer.self, from: data)
+            if playerData.overridePlayer ?? false { //override the player with the new peerID and refresh game
+                players.first(where: {$0.name == playerData.name})?.peerId = peerID
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.sendData()
+                }
+            }
             DispatchQueue.main.async {
-                self.players[self.currentPlayerIndex].updateFromTransfer(transfer: playerData)
-                self.currentBetOnTable = playerData.currentBetOnTable ?? 0
-//                self.goToNextRound()
-                self.nextPlayersTurn()
+                if let currentBet = playerData.currentBet {
+                    let previousHighestBet = self.currentBetOnTable
+                    
+                    let newChipsAdded = currentBet - self.players[self.currentPlayerIndex].currentBet
+                    self.addChipsToTable(count: newChipsAdded, color: self.players[self.currentPlayerIndex].color)
+                    
+                    self.players[self.currentPlayerIndex].updateFromTransfer(transfer: playerData)
+                    self.currentBetOnTable = playerData.currentBetOnTable ?? 0
+                    if self.currentBetOnTable > previousHighestBet {
+                        self.currentBettingLeaderIndex = self.currentPlayerIndex
+                    }
+    //                self.goToNextRound()
+                    self.nextPlayersTurn()
+                }
             }
         }
         catch {
@@ -245,8 +323,23 @@ extension Game: MCNearbyServiceAdvertiserDelegate {
         if let context = context {
             do {
                 let playerData = try JSONDecoder().decode(PlayerInfoToTransfer.self, from: context)
-                DispatchQueue.main.async {
-                    self.players.append(Player(playerToTransfer: playerData, peerId: peerID))
+                if playerData.requestPlayerList ?? false {
+                    //wait a second to connect before trying to send back the list of players
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        print("Sending over player list:")
+                        do {
+                            let gameDataToTransfer = PlayerInfoToTransfer(playerList: self.players, requestPlayerList: true)
+                            let data = try JSONEncoder().encode(gameDataToTransfer)
+                            try self.session.send(data, toPeers: [peerID], with: .unreliable)
+                        }
+                        catch {
+                            print(error.localizedDescription)
+                        }
+                    }
+                }else {
+                    DispatchQueue.main.async {
+                        self.players.append(Player(playerToTransfer: playerData, peerId: peerID))
+                    }
                 }
             }
             catch {
@@ -257,21 +350,3 @@ extension Game: MCNearbyServiceAdvertiserDelegate {
         invitationHandler(true, session)
     }
 }
-
-
-//extension Game: MCNearbyServiceBrowserDelegate {
-//    func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
-//        //TODO: Tell the user something went wrong and try again
-//        print("ServiceBroser didNotStartBrowsingForPeers: \(String(describing: error))")
-//    }
-//
-//    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-//        print("ServiceBrowser found peer: \(peerID)")
-//        // Add the peer to the list of available peers
-//    }
-//
-//    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-//        print("ServiceBrowser lost peer: \(peerID)")
-//        // Remove lost peer from list of available peers
-//    }
-//}

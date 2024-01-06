@@ -4,6 +4,8 @@
 <dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>This is required to find nearby players</string>
+	<key>CFBundleDisplayName</key>
+	<string>Chip Table</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_chipTable-serv._tcp</string>

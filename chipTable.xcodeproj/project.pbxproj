@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988438A52B49B6C400F05777 /* RejoinGameView.swift */; };
 		988DADFB296873B30084C50C /* PlayerHandWaitingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988DADFA296873B30084C50C /* PlayerHandWaitingView.swift */; };
 		988DADFD29687C930084C50C /* PlayerPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988DADFC29687C930084C50C /* PlayerPlayingView.swift */; };
+		98AA5F492969E14500D3BE7C /* SelectWinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */; };
+		98AA5F4B2969E4AB00D3BE7C /* RoundSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */; };
 		98CC58AE29685D8E00D73B01 /* viewElemements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CC58AD29685D8E00D73B01 /* viewElemements.swift */; };
 		98CD4451296753EB00680CEE /* chipTableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CD4450296753EB00680CEE /* chipTableApp.swift */; };
 		98CD4453296753EB00680CEE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CD4452296753EB00680CEE /* HomeView.swift */; };
@@ -23,8 +26,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		988438A52B49B6C400F05777 /* RejoinGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejoinGameView.swift; sourceTree = "<group>"; };
 		988DADFA296873B30084C50C /* PlayerHandWaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerHandWaitingView.swift; sourceTree = "<group>"; };
 		988DADFC29687C930084C50C /* PlayerPlayingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPlayingView.swift; sourceTree = "<group>"; };
+		98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWinnerView.swift; sourceTree = "<group>"; };
+		98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundSummaryView.swift; sourceTree = "<group>"; };
 		98CC58AD29685D8E00D73B01 /* viewElemements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewElemements.swift; sourceTree = "<group>"; };
 		98CD444D296753EB00680CEE /* chipTable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chipTable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		98CD4450296753EB00680CEE /* chipTableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chipTableApp.swift; sourceTree = "<group>"; };
@@ -116,6 +122,7 @@
 				98CD446129675AE900680CEE /* ConfigureView.swift */,
 				98CD446829677BF700680CEE /* PlayerCreateView.swift */,
 				98CD44632967776F00680CEE /* FindGameView.swift */,
+				988438A52B49B6C400F05777 /* RejoinGameView.swift */,
 			);
 			path = "Setup Views";
 			sourceTree = "<group>";
@@ -126,6 +133,8 @@
 				98CD446E29685C6700680CEE /* GameTableView.swift */,
 				988DADFA296873B30084C50C /* PlayerHandWaitingView.swift */,
 				988DADFC29687C930084C50C /* PlayerPlayingView.swift */,
+				98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */,
+				98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */,
 			);
 			path = "Game Views";
 			sourceTree = "<group>";
@@ -203,7 +212,9 @@
 				98CD4453296753EB00680CEE /* HomeView.swift in Sources */,
 				98CD4460296753F700680CEE /* Game.swift in Sources */,
 				988DADFB296873B30084C50C /* PlayerHandWaitingView.swift in Sources */,
+				98AA5F4B2969E4AB00D3BE7C /* RoundSummaryView.swift in Sources */,
 				98CD4451296753EB00680CEE /* chipTableApp.swift in Sources */,
+				988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */,
 				98CD44642967776F00680CEE /* FindGameView.swift in Sources */,
 				98CD446729677B0B00680CEE /* Player.swift in Sources */,
 				98CD446F29685C6700680CEE /* GameTableView.swift in Sources */,
@@ -211,6 +222,7 @@
 				98CD446929677BF700680CEE /* PlayerCreateView.swift in Sources */,
 				988DADFD29687C930084C50C /* PlayerPlayingView.swift in Sources */,
 				98CD446229675AE900680CEE /* ConfigureView.swift in Sources */,
+				98AA5F492969E14500D3BE7C /* SelectWinnerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,6 +282,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "Chip Table";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -321,6 +334,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "Chip Table";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};

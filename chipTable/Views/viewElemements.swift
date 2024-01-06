@@ -16,7 +16,7 @@ struct buttonView: View {
         Text(title)
             .foregroundColor(titleColor)
             .font(Font.system(size: 20, weight: .medium))
-            .frame(width: 350, height: 65)
+            .frame(width: 350, height: 55)
 //            .frame(minWidth: 350, maxWidth: .infinity)
             .background(backgroundColor)
             .cornerRadius(12)

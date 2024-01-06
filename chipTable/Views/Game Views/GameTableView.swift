@@ -11,9 +11,14 @@ struct GameTableView: View {
     @ObservedObject var game: Game
     var body: some View {
         ZStack {
+            //game space
+            CardSpaceView(game: game)
+                .frame(width: 800, height: 400)
+//                .background(.red)
+            
             VStack {
-                HStack(alignment: .center) {
-                    Text("Round 1")
+                HStack(alignment: .top) {
+                    Text("Round \(game.round)")
                         .font(Font.system(size: 50, weight: .bold))
                         .foregroundColor(Color("Red"))
                     Spacer()
@@ -33,10 +38,22 @@ struct GameTableView: View {
                     .padding(.bottom, -60.0)
             }
             .padding(.all)
+            if game.bettingRoundOver {
+                VStack {
+                    Text("Flip over next card(s)")
+                        .font(Font.system(size: 24, weight: .semibold))
+                        .foregroundColor(Color("Red"))
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.all, 40.0)
+                .background(Color("Card"))
+                .cornerRadius(12)
+            }
+            
             VStack {
                 Spacer()
                 Button(action: {
-                    print("Round OVer")
+                    game.showingWinnerSelectModal.toggle()
                 }) {
                     buttonView(title: "Round Over")
                 }
@@ -59,6 +76,9 @@ struct GameTableView: View {
             }
         }
         .background(Color("Blue"))
+        .sheet(isPresented: $game.showingWinnerSelectModal) {
+                    SelectWinnerView(game: game)
+                }
     }
 }
 
@@ -68,6 +88,35 @@ struct TableView_Previews: PreviewProvider {
             .previewInterfaceOrientation(.landscapeRight)
     }
 }
+
+struct CardSpaceView: View {
+    @ObservedObject var game: Game
+    var body: some View {
+        ForEach(game.chips) {
+            chip in
+            ChipView(color: chip.color)
+                .position(x: CGFloat(chip.x), y: CGFloat(chip.y))
+        }
+    }
+}
+
+struct ChipView: View {
+    var color: Color
+    var body: some View {
+        ZStack {
+            Circle()
+                .frame(width: 88, height: 88)
+                .foregroundColor(.white)
+            Image("Chip")
+                .resizable()
+                .frame(width: 90, height: 90)
+                .foregroundColor(color)
+                .shadow(radius: 7)
+        }
+        
+    }
+}
+
 
 struct PlayerScoreView: View {
     @ObservedObject var player: Player
@@ -94,11 +143,11 @@ struct PlayerScoreView: View {
                 Circle()
                     .frame(width: 30, height: 30)
                     .foregroundColor(player.color)
-                Text(String(player.currentBet))
-                    .foregroundColor(Color("Red"))
-                    .font(Font.system(size: 20, weight: .bold))
-                    .frame(width: 35)
             }
+            Text(String(player.currentBet))
+                .foregroundColor(Color("Red"))
+                .font(Font.system(size: 20, weight: .bold))
+                .frame(width: 35)
         }
     }
 }
