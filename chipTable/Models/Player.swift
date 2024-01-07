@@ -92,16 +92,33 @@ struct PlayerInfoToTransfer: Codable {
     var currentPlaterName: String?
     var currentBetOnTable: Int?
     
+    var requestPlayerList: Bool?
+    var playerList: [String]?
+    var overridePlayer: Bool? //when this is true, the peerID of the sender will replace what is saved for the player name
     init() {
     
     }
-    
+    init(requestPlayerList: Bool) {
+        self.requestPlayerList = requestPlayerList
+    }
+    init(overridePlayer: Bool, playerName: String) {
+        name = playerName
+        self.overridePlayer = overridePlayer
+    }
     init(player: Player) {
         name = player.name
         color = player.getColorString()
         folded = player.folded
-        currentBet = player.currentBet
+        if player.folded {
+            currentBet = 0
+        }else {
+            currentBet = player.currentBet
+        }
         chipsRemaining = player.chipsRemaining
+    }
+    init(playerList: [Player], requestPlayerList: Bool) {
+        self.playerList = playerList.map({$0.name})
+        self.requestPlayerList = requestPlayerList
     }
     
     init(gameState: GameState, chipsRemaining: Int, currentBet: Int, currentPlayer: String, currentBetOnTable: Int, color: String) {
@@ -245,6 +262,28 @@ class PlayerGame: NSObject, ObservableObject {
             print("Couldnt send data!")
         }
     }
+    func requestPlayerList(gameId: MCPeerID) {
+        tablePeerId = gameId
+        do {
+            let transfer = PlayerInfoToTransfer(requestPlayerList: true)
+            let playerRequest = try JSONEncoder().encode(transfer)
+            serviceBrowser.invitePeer(gameId, to: session, withContext: playerRequest, timeout: TimeInterval(120))
+//            try session.send(playerRequest, toPeers: [tablePeerId], with: .unreliable)
+        }
+        catch {
+            print("Couldnt send data!")
+        }
+    }
+    func rejoinGame(player: String) {
+        do {
+            let transfer = PlayerInfoToTransfer(overridePlayer: true, playerName: player)
+            let playerRequest = try JSONEncoder().encode(transfer)
+            try session.send(playerRequest, toPeers: [tablePeerId], with: .unreliable)
+        }
+        catch {
+            print("Couldnt send data!")
+        }
+    }
 }
 extension PlayerGame: MCSessionDelegate {
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
@@ -266,6 +305,11 @@ extension PlayerGame: MCSessionDelegate {
         print("IS Receiving data!")
         do {
             let playerData = try JSONDecoder().decode(PlayerInfoToTransfer.self, from: data)
+            if playerData.requestPlayerList ?? false {
+                print("Received player list!")
+                print(playerData.playerList ?? [])
+                players = playerData.playerList
+            }
             DispatchQueue.main.async {
                 self.player = Player(playerToTransfer: playerData)
                 self.gameState = playerData.gameState ?? .waitingPlayers

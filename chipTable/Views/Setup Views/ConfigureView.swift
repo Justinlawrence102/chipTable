@@ -77,7 +77,7 @@ struct ConfigureView: View {
                                 .cornerRadius(12)
                         }
                         HStack{
-                            Text("Require big and little bet")
+                            Text("Require big and little blind")
                                 .font(Font.system(size: 20, weight: .medium))
                             .foregroundColor(Color("Blue"))
                             Spacer()
@@ -85,11 +85,11 @@ struct ConfigureView: View {
                                 .toggleStyle(SwitchToggleStyle(tint: Color("Light Blue")))
                         }
                         HStack{
-                            Text("Increase max bet once someone gets out")
+                            Text("Increase blinds once someone gets out")
                                 .font(Font.system(size: 20, weight: .medium))
                             .foregroundColor(Color("Blue"))
                             Spacer()
-                            Toggle("", isOn: $game.requireBigLittle)
+                            Toggle("", isOn: $game.increaseMaxBet)
                                 .toggleStyle(SwitchToggleStyle(tint: Color("Light Blue")))
                         }
                     }
@@ -104,6 +104,7 @@ struct ConfigureView: View {
                     }) {
                         buttonView(title: "Confirm and Start")
                     }
+                    .disabled(game.players.isEmpty)
                 }
                 .frame(maxWidth: .infinity)
             }

@@ -121,7 +121,11 @@ class Game: NSObject, ObservableObject {
         round += 1
         currentBetOnTable = 0
         chips = []
-        minBet = (players.count - playersWithChips().count + 1)*2
+        if increaseMaxBet {
+            minBet = (players.count - playersWithChips().count + 1)*2
+        }else {
+            minBet = 2
+        }
         while(true) {
             dealerIndex += 1
             if dealerIndex == players.count {
@@ -141,6 +145,12 @@ class Game: NSObject, ObservableObject {
         var gaveSmallBlind = false
         var foundFirstPlayer = false
         var i = dealerIndex + 1
+        
+        if !requireBigLittle {
+            gaveLargeBlind = true
+            gaveSmallBlind = true
+        }
+        
         while(!gaveLargeBlind || !gaveSmallBlind || !foundFirstPlayer) {
             if (i >= players.count) {
                 i = 0

@@ -9,6 +9,7 @@ import SwiftUI
 struct HomeView: View {
     @State private var isStartingGame = false
     @State private var isJoiningGame = false
+    @State private var isRejoiningGame = false
     var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 
     var body: some View {
@@ -47,6 +48,12 @@ struct HomeView: View {
             }) {
                 buttonView(title: "Join Game", backgroundColor: Color(idiom == .pad ? "Card" : "Light Blue"), titleColor: Color(idiom == .pad ? "Light Blue" : "Card"))
             }
+            Button(action: {
+                print("Join Game")
+                isRejoiningGame.toggle()
+            }) {
+                buttonView(title: "Rejoin Exisiting Game", backgroundColor: Color("Card"), titleColor: Color( "Light Blue"))
+            }
             if idiom == .phone {
                 Text("An iPad is required to act as the table and start the game")
                     .multilineTextAlignment(.center)
@@ -57,7 +64,10 @@ struct HomeView: View {
             Spacer()
             bottomCardView()
                 .fullScreenCover(isPresented: $isStartingGame, content: ConfigureView.init)
-                .fullScreenCover(isPresented: $isJoiningGame, content: PlayerCreateView.init)
+                .sheet(isPresented: $isJoiningGame, content: PlayerCreateView.init)
+                .sheet(isPresented: $isRejoiningGame) {
+                    RejoinGameView(gameManager: PlayerGame(player: Player()))
+                }
         }
         .padding(24.0)
     }
