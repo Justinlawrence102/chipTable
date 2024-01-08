@@ -33,6 +33,7 @@ class Game: NSObject, ObservableObject {
     @Published var name: String
     var dealerIndex: Int
     @Published var round = 0
+    @Published var startConffeti = 0
     var minBet = 2
     var requireBigLittle = true
     var increaseMaxBet = true
@@ -121,6 +122,14 @@ class Game: NSObject, ObservableObject {
         round += 1
         currentBetOnTable = 0
         chips = []
+        
+        if playersWithChips().count <= 1 {
+            print("\(playersWithChips().first?.name ?? "Player") won!")
+            startConffeti += 1
+            sendGameOverData()
+            return
+        }
+        
         if increaseMaxBet {
             minBet = (players.count - playersWithChips().count + 1)*2
         }else {
@@ -181,11 +190,11 @@ class Game: NSObject, ObservableObject {
     }
     
     func nextPlayersTurn() {
-        if playersWithChips().count <= 1 {
-            print("There is a winner!")
+        if playersWithChips().count == 0 {
+            print("No one else can play")
             return
         }
-        
+//        startConffeti += 1
         currentPlayerIndex += 1
 
         if (currentPlayerIndex >= players.count) {
@@ -224,10 +233,10 @@ class Game: NSObject, ObservableObject {
     }
     func sendData() {
         for player in players {
-            player.isMyTurn = false
-            if isPlayingNow(player: player) {
-                player.isMyTurn = true
-            }
+            player.isMyTurn = isPlayingNow(player: player)
+//            if isPlayingNow(player: player) {
+//                player.isMyTurn = true
+//            }
             var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: getCurrentPlayer().name, currentBetOnTable: currentBetOnTable, color: player.getColorString())
             if (currentPlayerIndex == player.orderIndex) {
                 gameDataToTransfer.gameState = .yourTurn
@@ -243,10 +252,27 @@ class Game: NSObject, ObservableObject {
             }
         }
     }
+    func sendGameOverData() {
+        for player in players {
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .endOfGame, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: playersWithChips().first?.name ?? "Player", currentBetOnTable: currentBetOnTable, color: player.getColorString())
+            if player.name == playersWithChips().first?.name {
+                gameDataToTransfer.gameState = .playerWon
+            }
+            do {
+                let data = try JSONEncoder().encode(gameDataToTransfer)
+                if let peerId = player.peerId {
+                    try session.send(data, toPeers: [peerId], with: .unreliable)
+                }
+            }
+            catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
 }
 
 enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
-    case waitingSetup, waitingPlayers, yourTurn, yourTurnOver, endOfRound
+    case waitingSetup, waitingPlayers, yourTurn, yourTurnOver, endOfGame, playerWon
 
     var description : String {
         switch self {
@@ -254,7 +280,8 @@ enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
         case .waitingPlayers: return "waitingPlayers"
         case .yourTurn: return "yourTurn"
         case .yourTurnOver: return "yourTurnOver"
-        case .endOfRound: return "endOfRound"
+        case .endOfGame: return "endOfGame"
+        case .playerWon: return "playerOne"
         }
     }
 }

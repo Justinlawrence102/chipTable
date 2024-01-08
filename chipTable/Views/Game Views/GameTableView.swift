@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ConfettiSwiftUI
 
 struct GameTableView: View {
     @ObservedObject var game: Game
@@ -75,6 +76,7 @@ struct GameTableView: View {
                 }
             }
         }
+        .confettiCannon(counter: $game.startConffeti, num: 120, colors: [Color("Light Blue"), Color("Red"), Color("Card")],rainHeight: 200, openingAngle: Angle.degrees(0), closingAngle: Angle.degrees(360), radius: 550, repetitions: 1, repetitionInterval: 0.8)
         .background(Color("Blue"))
         .sheet(isPresented: $game.showingWinnerSelectModal) {
                     SelectWinnerView(game: game)

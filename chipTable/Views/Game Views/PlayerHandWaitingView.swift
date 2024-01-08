@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PlayerHandWaitingView: View {
     @ObservedObject var playerGame: PlayerGame
+    
     var body: some View {
         ZStack {
             VStack {
@@ -58,6 +59,9 @@ struct PlayerHandWaitingView: View {
         .background(Color("Blue"))
         .fullScreenCover(isPresented: $playerGame.isYourTurn) {
             PlayerPlayingView(playerGame: playerGame)
+        }
+        .sheet(isPresented: $playerGame.gameOver) {
+            PlayerWonView(playerGame: playerGame)
         }
     }
 }

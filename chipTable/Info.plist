@@ -6,6 +6,8 @@
 	<string>This is required to find nearby players</string>
 	<key>CFBundleDisplayName</key>
 	<string>Chip Table</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_chipTable-serv._tcp</string>

@@ -144,6 +144,7 @@ class PlayerGame: NSObject, ObservableObject {
     var gameState: GameState
     
     @Published var isYourTurn = false
+    @Published var gameOver = false
     
     @Published var chipsOnTable = [[Chip]]()
     @Published var rowCounter = 0
@@ -322,6 +323,9 @@ extension PlayerGame: MCSessionDelegate {
                 }
                 print("Chips Remaining! \(self.player.chipsRemaining)")
                 self.setUpChipsUI()
+                if playerData.gameState == .endOfGame || playerData.gameState == .playerWon {
+                    self.gameOver = true
+                }
             }
         }
         catch {
