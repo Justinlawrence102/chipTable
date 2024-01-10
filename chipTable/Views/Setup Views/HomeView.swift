@@ -6,56 +6,123 @@
 //
 
 import SwiftUI
+#if os(tvOS)
 struct HomeView: View {
-    @State private var isStartingGame = false
     @State private var isJoiningGame = false
     @State private var isRejoiningGame = false
     @State private var showingTutorialSheet = false
     var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
+            ZStack {
+                HStack(spacing: 24.0) {
+                    VStack(alignment: .leading) {
+                        Text("Welcome To")
+                            .font(.largeTitle.weight(.bold))
+                            .foregroundColor(Color("Card"))
+                        Text("Chip Table")
+                            .font(.largeTitle.weight(.bold))
+                            .foregroundColor(Color("Red"))
+                        
+                    }
+                    .padding(.leading)
+                    Spacer()
+                    VStack {
+                        NavigationLink(destination: {
+                            ConfigureView()
+                        }, label:  {
+                            buttonView(title: "Start Game")
+                        })
+                        .buttonStyle(.card)
+                        NavigationLink(destination: {
+                            TutorialView1(selectedTabView: 0, showingTutorial: $showingTutorialSheet)
+                        }, label:  {
+                            buttonView(title: "Learn More", backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
+                        })
+                        .buttonStyle(.card)
+                    }
+                    .padding(.trailing)
+                }
+                Spacer()
+                VStack {
+                    Spacer()
+                    bottomCardView()
+                }
+            }
+            .padding([.leading, .bottom, .trailing], 24.0)
+            .background(
+                LinearGradient(gradient: Gradient(colors: [Color("Blue").opacity(0.1), Color("Blue")]), startPoint: .top, endPoint: .bottom)
+            )
+        }
+    }
+}
+
+#else
+struct HomeView: View {
+    @State private var isJoiningGame = false
+    @State private var isRejoiningGame = false
+    @State private var showingTutorialSheet = false
+    var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+
+    var body: some View {
+        NavigationStack {
             VStack(spacing: 24.0) {
                 if idiom == .pad {
                     HStack {
                         Text("Welcome To")
-                            .font(Font.system(size: 50, weight: .bold))
-                            .foregroundColor(Color("Blue"))
+                            .font(.largeTitle.weight(.bold))
+                            .foregroundColor(Color("Text"))
                         Text("Chip Table")
+                            .font(.largeTitle.weight(.bold))
                             .foregroundColor(Color("Red"))
-                            .font(Font.system(size: 50, weight: .bold))
                         Spacer()
                     }
                 } else {
                     VStack {
                         Text("Welcome To")
-                            .font(Font.system(size: 50, weight: .bold))
-                            .foregroundColor(Color("Blue"))
+                            .font(.largeTitle.weight(.bold))
+                            .foregroundColor(Color("Text"))
                         Text("Chip Table")
+                            .font(.largeTitle.weight(.bold))
                             .foregroundColor(Color("Red"))
-                            .font(Font.system(size: 50, weight: .bold))
+                        
                     }
                 }
                 if idiom == .pad {
+                    NavigationLink(destination: {
+                        ConfigureView()
+                    }, label:  {
+                        Text("Start Game")
+                    })
+                    .buttonStyle(PrimaryButton())
+                }
+                if (idiom == .pad) {
                     Button(action: {
-                        isStartingGame.toggle()
-                        print("Start Game")
+                        print("Join Game")
+                        isJoiningGame.toggle()
                     }) {
-                        buttonView(title: "Start Game")
+                        Text("Join Game")
                     }
+                    .buttonStyle(SecondaryButton())
+                }else {
+                    Button(action: {
+                        print("Join Game")
+                        isJoiningGame.toggle()
+                    }) {
+                        Text("Join Game")
+                    }
+                    .buttonStyle(PrimaryButton())
                 }
+                
                 Button(action: {
-                    print("Join Game")
-                    isJoiningGame.toggle()
-                }) {
-                    buttonView(title: "Join Game", backgroundColor: Color(idiom == .pad ? "Card" : "Light Blue"), titleColor: Color(idiom == .pad ? "Light Blue" : "Card"))
-                }
-                Button(action: {
-                    print("Join Game")
+                    print("Rejoin Game")
                     isRejoiningGame.toggle()
                 }) {
-                    buttonView(title: "Rejoin Exisiting Game", backgroundColor: Color("Card"), titleColor: Color( "Light Blue"))
+                    Text("Rejoin Exisitng Game")
                 }
+                .buttonStyle(SecondaryButton())
+                
                 if idiom == .phone {
                     Text("An iPad is required to act as the table and start the game")
                         .multilineTextAlignment(.center)
@@ -65,7 +132,6 @@ struct HomeView: View {
                 }
                 Spacer()
                 bottomCardView()
-                    .fullScreenCover(isPresented: $isStartingGame, content: ConfigureView.init)
                     .sheet(isPresented: $isJoiningGame, content: PlayerCreateView.init)
                     .sheet(isPresented: $isRejoiningGame) {
                         RejoinGameView(gameManager: PlayerGame(player: Player()))
@@ -87,6 +153,7 @@ struct HomeView: View {
         }
     }
 }
+#endif
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
@@ -94,3 +161,5 @@ struct ContentView_Previews: PreviewProvider {
             .previewInterfaceOrientation(.landscapeLeft)
     }
 }
+
+

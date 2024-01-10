@@ -44,8 +44,9 @@ struct TutorialView1: View {
                         selectedTabView = 2
                     }
                 }, label: {
-                    buttonView(title: "Continue", backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
+                    Text("Continue")
                 })
+                .buttonStyle(SecondaryButton())
             }
             .tag(1)
             .padding()
@@ -82,8 +83,9 @@ struct TutorialView1: View {
                         selectedTabView = 3
                     }
                 }, label: {
-                    buttonView(title: "Continue", backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
+                    Text("Continue")
                 })
+                .buttonStyle(SecondaryButton())
             }
             .padding()
             .tag(2)
@@ -100,8 +102,9 @@ struct TutorialView1: View {
                 Button(action: {
                     showingTutorial = false
                 }, label: {
-                    buttonView(title: "Get Started")
+                    Text("Get Started")
                 })
+                .buttonStyle(PrimaryButton())
             }
             .padding()
             .tag(3)

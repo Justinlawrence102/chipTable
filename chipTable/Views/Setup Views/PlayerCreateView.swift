@@ -58,8 +58,9 @@ struct PlayerCreateView: View {
                 isFindingGame.toggle()
                 print("Find Game")
             }) {
-                buttonView(title: "Find Game")
+                Text("Find Game")
             }
+            .buttonStyle(PrimaryButton())
             .disabled(player.name == "")
         }
         .padding(.all)

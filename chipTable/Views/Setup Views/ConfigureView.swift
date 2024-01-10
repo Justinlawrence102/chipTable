@@ -7,11 +7,102 @@
 
 import SwiftUI
 
+#if os(tvOS)
+struct ConfigureView: View {
+    @Namespace private var namespace
+    
+    @ObservedObject var game = Game()
+    
+    @State var editMode: EditMode = .active
+    @State var defaultFocus = true
+    @State var isStartingGame = false
+    
+    var body: some View {
+        VStack(spacing: 12.0) {
+            Text("Configure Game")
+                .font(.largeTitle.weight(.semibold))
+            HStack {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("SETTINGS")
+                            .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .opacity(0.5)
+                        Spacer()
+                    }
+                    HStack {
+                        Text("Starting Chip Count")
+                        Spacer()
+                        TextField("0", text: $game.startingChipCount, prompt: Text("0"))
+                            .keyboardType(.numberPad)
+                            .prefersDefaultFocus(true, in: namespace)
+                    }
+                    Toggle(isOn: $game.requireBigLittle) {
+                        Text("Require big and little blind")
+                    }
+                    Toggle(isOn: $game.increaseMaxBet) {
+                        Text("Increase blinds once someone gets out")
+                    }
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                VStack {
+                    HStack {
+                        Text("PLAYERS")
+                            .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .opacity(0.5)
+                        Spacer()
+                    }
+                    if (game.players.isEmpty) {
+                        VStack {
+                            Text("Waiting for players")
+                                .font(.title3.weight(.medium))
+                            .foregroundColor(Color("Red"))
+                            ProgressView()
+                            Spacer()
+                        }
+                    }else {
+                        List($game.players, editActions: .move) {
+                            $player in
+                            HStack{
+                                Circle()
+                                    .foregroundColor(player.color)
+                                    .frame(width: 35, height: 35)
+                                Text(player.name)
+                                Spacer()
+                            }
+                        }
+                        .prefersDefaultFocus(false, in: namespace)
+                        .environment(\.editMode, $editMode)
+                    }
+                }
+            }
+            .focusScope(namespace)
+            Button(action: {
+                print("Confirm and Start")
+                isStartingGame.toggle()
+                game.setUpGame()
+            }) {
+                buttonView(title: "Confirm and Start")
+            }
+            .buttonStyle(.card)
+            .disabled(game.players.isEmpty)
+        }
+        .background(
+            LinearGradient(gradient: Gradient(colors: [Color("Blue").opacity(0.1), Color("Blue")]), startPoint: .top, endPoint: .bottom)
+        )
+        .sheet(isPresented: $isStartingGame) {
+            GameTableView(game: game)
+        }
+    }
+}
+#else
 struct ConfigureView: View {
     @ObservedObject var game = Game()
-    @State private var isStartingGame = false
 
     @State var editMode: EditMode = .active
+    @State var isStartingGame = false
     var body: some View {
         VStack {
             HStack(alignment: .center) {
@@ -102,8 +193,9 @@ struct ConfigureView: View {
                         isStartingGame.toggle()
                         game.setUpGame()
                     }) {
-                        buttonView(title: "Confirm and Start")
+                        Text("Confirm and Start")
                     }
+                    .buttonStyle(PrimaryButton())
                     .disabled(game.players.isEmpty)
                 }
                 .frame(maxWidth: .infinity)
@@ -117,6 +209,7 @@ struct ConfigureView: View {
         .padding([.top, .leading, .trailing], 24.0)
     }
 }
+#endif
 
 struct ConfigureView_Previews: PreviewProvider {
     static var previews: some View {

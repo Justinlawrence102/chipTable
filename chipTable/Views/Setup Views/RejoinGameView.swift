@@ -28,8 +28,9 @@ struct RejoinGameView: View {
                                         gameManager.rejoinGame(player: player)
                                         isStartingGame.toggle()
                                     }, label: {
-                                        buttonView(title: player)
+                                        Text(player)
                                     })
+                                    .buttonStyle(SecondaryButton())
                                 }
                             }else {
                                 ProgressView()
@@ -39,8 +40,9 @@ struct RejoinGameView: View {
                             gameManager.requestPlayerList(gameId: peerId)
                         }
                     }, label: {
-                        buttonView(title: peerId.displayName, backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
+                        Text(peerId.displayName)
                     })
+                    .buttonStyle(SecondaryButton())
                 }
                 VStack {
                     ProgressView()

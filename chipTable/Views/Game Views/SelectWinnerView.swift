@@ -24,8 +24,9 @@ struct SelectWinnerView: View {
                             game.selectWinner(player: player)
                             isShowingWinner.toggle()
                         }) {
-                            buttonView(title: player.name)
+                            Text(player.name)
                         }
+                        .buttonStyle(PrimaryButton())
                     }
                     Spacer()
                 }

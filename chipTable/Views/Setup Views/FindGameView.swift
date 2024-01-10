@@ -22,8 +22,9 @@ struct FindGameView: View {
                     gameManager.didSelectGame(gameId: peerId)
                     isStartingGame.toggle()
                 }) {
-                    buttonView(title: peerId.displayName, backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
+                    Text(peerId.displayName)
                 }
+                .buttonStyle(SecondaryButton())
             }
             VStack {
                 ProgressView()

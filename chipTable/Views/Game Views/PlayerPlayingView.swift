@@ -25,28 +25,34 @@ struct PlayerPlayingView: View {
                     playerGame.matchBet()
                     print("Match")
                 }) {
-                    buttonView(title: "Match Bet")
+                    Text("Match Bet")
                 }
+                .buttonStyle(PrimaryButton())
                 
                 Button(action: {
                     print("Raise 1")
                     playerGame.raise1()
                 }) {
-                    buttonView(title: "Raise + 1")
+                    Text("Raise + 1")
                 }
+                .buttonStyle(PrimaryButton())
+                
                 Spacer()
                 Button(action: {
                     print("Send Chips")
                     playerGame.sendChips()
                 }) {
-                    buttonView(title: "Send Chips")
+                    Text("Send Chips")
                 }
+                .buttonStyle(PrimaryButton())
+                
                 Button(action: {
                     playerGame.fold()
                     print("Fold")
                 }) {
-                    buttonView(title: "Fold", backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
+                    Text("Fold")
                 }
+                .buttonStyle(SecondaryButton())
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.horizontal, 40.0)

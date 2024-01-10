@@ -8,6 +8,158 @@
 import SwiftUI
 import ConfettiSwiftUI
 
+#if os(tvOS)
+struct GameTableView: View {
+    @ObservedObject var game: Game
+    @State var showPickWinnerAlertSheet = false
+    @State var isShowingWinner = false
+//    init(game: Game) {
+//        self.game = game
+//        self.game.setUpGame()
+//    }
+    var body: some View {
+        ZStack {
+            //game space
+            CardSpaceView(game: game)
+                .frame(width: 800, height: 450)
+            
+            VStack {
+                HStack(alignment: .top) {
+                    Text("Round \(game.round)")
+                        .font(.largeTitle.weight(.bold))
+                        .foregroundColor(Color("Red"))
+                    Spacer()
+                }
+                Spacer()
+//                bottomCardView()
+                    .padding(.bottom, -60.0)
+            }
+            .padding(.all)
+            if game.bettingRoundOver {
+                VStack {
+                    Text("Flip over next card(s)")
+                        .font(Font.system(size: 24, weight: .semibold))
+                        .foregroundColor(Color("Red"))
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.all, 40.0)
+                .background(Color("Card"))
+                .cornerRadius(12)
+            }
+            
+            VStack {
+                Spacer()
+                Button(action: {
+                    showPickWinnerAlertSheet.toggle()
+                }) {
+                    buttonView(title: "Round Over")
+                }
+                .buttonStyle(.card)
+                .contextMenu {
+                        Button {
+                            game.showingWinnerSelectModal.toggle()
+                        } label: {
+                            Label("Pick Winner", systemImage: "heart")
+                        }
+                        Button {
+                            game.sendData()
+                        } label: {
+                            Label("Reload", systemImage: "arrow.clockwise")
+                        }
+                    }
+            }
+        }
+
+        .overlay(alignment: .topTrailing, content: {
+            VStack(spacing: 8.0){
+                ForEach(game.players) {
+                    player in
+                    PlayerScoreView(player: player, game: game)
+                }
+            }
+            .padding(.all)
+            .frame(width: 350)
+            .background(Color("Card"))
+            .cornerRadius(12)
+        })
+        .overlay(alignment: .bottomLeading, content: {
+            ZStack {
+                Image(systemName: "suit.diamond.fill")
+                    .font(Font.system(size: 90))
+                    .foregroundColor(Color("Red"))
+                    .frame(width: 250, height: 350)
+                    .background(Color("Card"))
+                    .cornerRadius(20)
+                    .rotationEffect(Angle.degrees(5))
+                    .offset(x: 130, y: 0)
+                    .shadow(radius: 7)
+                Image(systemName: "suit.club.fill")
+                    .font(Font.system(size: 90))
+                    .foregroundColor(Color("Blue"))
+                    .frame(width: 250, height: 350)
+                    .background(Color("Card"))
+                    .cornerRadius(20)
+                    .rotationEffect(Angle.degrees(-6))
+                    .shadow(radius: 7)
+                Image(systemName: "suit.heart.fill")
+                    .font(Font.system(size: 90))
+                    .foregroundColor(Color("Red"))
+                    .frame(width: 250, height: 350)
+                    .background(Color("Card"))
+                    .cornerRadius(20)
+                    .rotationEffect(Angle.degrees(-18))
+                    .offset(x: -120, y: 30)
+                    .shadow(radius: 7)
+            }
+            .offset(y: 40)
+        })
+//        .overlay(alignment: .bottomTrailing, content: {
+//            if let players = game.get2dArrayOfPlayers() {
+//                VStack(spacing: -60.0) {
+//                    ForEach(players, id:\.self) {
+//                        list in
+//                        HStack(spacing: 8.0) {
+//                            ForEach(list) { player in
+//                                VStack(spacing: -25.0) {
+//                                    ForEach(0..<(player.chipsRemaining < 30 ? player.chipsRemaining : 30 )) { j in
+//                                        ZStack {
+//                                            Ellipse()
+//                                                .frame(width: 78, height: 40)
+//                                                .foregroundColor(.white)
+//                                            Image("Chip")
+//                                                .resizable()
+//                                                .frame(width: 80, height: 40)
+//                                                .foregroundColor(player.color)
+//                                                .shadow(radius: 7)
+//                                        }
+//                                    }
+//                                }
+//                                .rotationEffect(Angle.degrees(180))
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        })
+        
+        .confettiCannon(counter: $game.startConffeti, num: 120, colors: [Color("Light Blue"), Color("Red"), Color("Card")],rainHeight: 200, openingAngle: Angle.degrees(0), closingAngle: Angle.degrees(360), radius: 550, repetitions: 1, repetitionInterval: 0.8)
+        .background(LinearGradient(gradient: Gradient(colors: [Color("Blue").opacity(0.1), Color("Blue")]), startPoint: .top, endPoint: .bottom))
+        .alert("Select Winner", isPresented: $showPickWinnerAlertSheet) {
+            ForEach(game.players) {
+                player in
+                Button(player.name, action: {
+                    game.selectWinner(player: player)
+                    game.showingWinnerSelectModal.toggle()
+                })
+            }
+            Button("Cancel", role: .cancel, action: {})
+        }
+        .sheet(isPresented: $game.showingWinnerSelectModal) {
+            RoundSummaryView(game: game)
+        }
+    }
+}
+#else
 struct GameTableView: View {
     @ObservedObject var game: Game
     var body: some View {
@@ -56,8 +208,9 @@ struct GameTableView: View {
                 Button(action: {
                     game.showingWinnerSelectModal.toggle()
                 }) {
-                    buttonView(title: "Round Over")
+                    Text("Round Over")
                 }
+                .buttonStyle(PrimaryButton())
             }
             VStack {
                 Spacer()
@@ -81,9 +234,13 @@ struct GameTableView: View {
         .sheet(isPresented: $game.showingWinnerSelectModal) {
                     SelectWinnerView(game: game)
                 }
+        .onAppear() {
+            game.setUpGame()
+        }
     }
 }
 
+#endif
 struct TableView_Previews: PreviewProvider {
     static var previews: some View {
         GameTableView(game: Game())
@@ -124,23 +281,23 @@ struct PlayerScoreView: View {
     @ObservedObject var player: Player
     var game: Game
     var body: some View {
-        HStack() {
+        HStack(spacing: 8.0) {
             if (game.isDealer(player: player)) {
                 Image(systemName: "menucard.fill")
                     .foregroundColor(Color("Light Blue"))
                     .font(Font.system(size: 25))
             }else {
                 Spacer()
-                    .frame(width: 40)
+                    .frame(width: 35)
             }
             Text(player.name)
                 .foregroundColor(Color("Blue"))
-                .font(Font.system(size: 20, weight:player.isMyTurn ? .bold : .medium))
+                .font(.body.weight(player.isMyTurn ? .bold : .medium))
             Spacer()
             if player.folded {
                 Text("Fold")
                     .foregroundColor(Color("Light Red"))
-                    .font(Font.system(size: 20, weight: .bold))
+                    .font(.body.weight(.bold))
             } else {
                 Circle()
                     .frame(width: 30, height: 30)
@@ -148,7 +305,7 @@ struct PlayerScoreView: View {
             }
             Text(String(player.currentBet))
                 .foregroundColor(Color("Red"))
-                .font(Font.system(size: 20, weight: .bold))
+                .font(.body.weight(.bold))
                 .frame(width: 35)
         }
     }

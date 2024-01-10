@@ -241,6 +241,7 @@ class PlayerGame: NSObject, ObservableObject {
     }
     func fold() {
         player.folded = true
+        player.currentBet = 0
         sendChips()
     }
     

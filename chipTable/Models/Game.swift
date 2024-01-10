@@ -59,7 +59,7 @@ class Game: NSObject, ObservableObject {
     
     override init() {
         
-        players = [] //[Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow), Player(name: "Nicole", color: .purple)]
+        players = []//[Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow), Player(name: "Nicole", color: .purple)]
         chips = []
         name = ""
         dealerIndex = 0
@@ -268,6 +268,23 @@ class Game: NSObject, ObservableObject {
                 print(error.localizedDescription)
             }
         }
+    }
+    func get2dArrayOfPlayers() -> [[Player]]? {
+        var players = [[Player]]()
+        var index = 1
+        var smallArray = [Player]()
+        for player in self.players {
+            smallArray.append(player)
+            if index % 3 == 0 {
+                players.append(smallArray)
+                smallArray = [Player]()
+            }
+            index += 1
+        }
+        if !smallArray.isEmpty {
+            players.append(smallArray)
+        }
+        return players
     }
 }
 
