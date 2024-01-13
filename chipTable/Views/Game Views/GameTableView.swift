@@ -13,10 +13,7 @@ struct GameTableView: View {
     @ObservedObject var game: Game
     @State var showPickWinnerAlertSheet = false
     @State var isShowingWinner = false
-//    init(game: Game) {
-//        self.game = game
-//        self.game.setUpGame()
-//    }
+
     var body: some View {
         ZStack {
             //game space
@@ -159,6 +156,60 @@ struct GameTableView: View {
         }
     }
 }
+#elseif os(visionOS)
+struct GameTableView: View {
+    @EnvironmentObject var gameManager: PlayerGame
+    @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        ZStack {
+            VStack {
+                HStack(alignment: .top) {
+                    Text("Round \(gameManager.roundNumber ?? 1)")
+                        .font(.extraLargeTitle)
+                        .foregroundColor(Color("Red"))
+                    Spacer()
+                }
+                Spacer()
+                bottomCardView()
+                    .padding(.bottom, -60.0)
+            }
+            .padding(.all)
+            .overlay(alignment: .topTrailing){
+                VStack {
+                    ForEach(gameManager.players ?? [], id: \.self) {
+                        playerName in
+                        HStack {
+                            Text(playerName)
+                            Spacer()
+                            Text(gameManager.getChipsForPlayer(player: playerName))
+                                .font(.title.weight(.semibold))
+                        }
+                        .fontWeight(playerName == gameManager.currentPlayer ? .bold : .regular)
+                    }
+                }
+                .frame(width: 200)
+                .padding()
+                .background(.thinMaterial)
+                .cornerRadius(25)
+                .padding(24)
+            }
+            .overlay(alignment: .bottom){
+                SecondaryButtonView(title: "Exit Game", action: {
+                    _ in
+                    dismissWindow(id: "GameTable")
+                    dismiss()
+                })
+                .padding()
+            }
+        }
+        .background(
+            LinearGradient(gradient: Gradient(colors: [Color("Blue").opacity(0), Color("Blue").opacity(0.4), Color("Blue")]), startPoint: .top, endPoint: .bottom)
+            )
+//        .background(Color("Blue"))
+    }
+}
 #else
 struct GameTableView: View {
     @ObservedObject var game: Game
@@ -241,8 +292,13 @@ struct GameTableView: View {
 #endif
 struct TableView_Previews: PreviewProvider {
     static var previews: some View {
+        #if os(visionOS)
+        GameTableView()
+            .environmentObject(PlayerGame(player: Player()))
+        #else
         GameTableView(game: Game())
             .previewInterfaceOrientation(.landscapeRight)
+        #endif
     }
 }
 

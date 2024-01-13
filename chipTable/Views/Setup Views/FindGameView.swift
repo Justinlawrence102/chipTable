@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct FindGameView: View {
-    @ObservedObject var gameManager: PlayerGame
+    @EnvironmentObject var gameManager: PlayerGame
     @State private var isStartingGame = false
+#if !os(tvOS)
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismiss) var dismiss
+    #endif
     var body: some View {
         VStack {
             Text("Find Games")
@@ -24,6 +27,7 @@ struct FindGameView: View {
                     #if os(visionOS)
                     gameManager.didSelectGame(gameId: peerId)
                     openWindow(id: "GameTable")
+                    isStartingGame.toggle()
                     #else
                     gameManager.didSelectGame(gameId: peerId)
                     isStartingGame.toggle()
@@ -41,15 +45,23 @@ struct FindGameView: View {
             Spacer()
             bottomCardView()
         }
+        .overlay(alignment: .topTrailing) {
+            xButton(dismiss: _dismiss)
+        }
         .padding(.all)
         .fullScreenCover(isPresented: $isStartingGame) {
-            PlayerHandWaitingView(playerGame: gameManager)
+#if os(visionOS)
+            GameTableView()
+#else
+            PlayerHandWaitingView()
+#endif
         }
     }
 }
 
 struct FindGameView_Previews: PreviewProvider {
     static var previews: some View {
-        FindGameView(gameManager: PlayerGame(player: Player()))
+        FindGameView()
+            .environmentObject(PlayerGame())
     }
 }

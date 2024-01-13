@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct RejoinGameView: View {
-    @ObservedObject var gameManager: PlayerGame
+    @EnvironmentObject var gameManager: PlayerGame
     @State private var isStartingGame = false
+#if !os(tvOS)
     @Environment(\.dismiss) var dismiss
+    @Environment(\.openWindow) private var openWindow
+#endif
 
     var body: some View {
         NavigationStack {
@@ -22,7 +25,9 @@ struct RejoinGameView: View {
                     .foregroundColor(Color("Text"))
                     Spacer()
                 }.overlay(alignment: .topTrailing) {
+#if !os(tvOS)
                     xButton(dismiss: _dismiss)
+#endif
                 }
                 
                 ForEach(gameManager.availableGames, id: \.self)  {
@@ -34,8 +39,16 @@ struct RejoinGameView: View {
                                     player in
                                     SecondaryButtonView(title: player, action: {
                                         _ in
+#if os(visionOS)
+                                        gameManager.rejoinGame(player: player)
+                                        openWindow(id: "GameTable")
+                                        isStartingGame.toggle()
+#else
                                         gameManager.rejoinGame(player: player)
                                         isStartingGame.toggle()
+#endif
+                                        
+                                        
                                     })
                                 }
                             }else {
@@ -47,15 +60,20 @@ struct RejoinGameView: View {
                         }
                     }, label: {
                         Text(peerId.displayName)
-//#if os(visionOS)
-//                            .frame(width: 300, height: 55)
-//#endif
+#if os(visionOS)
+                            .frame(width: 300, height: 60)
+#else
+                            .foregroundColor(Color("Light Blue"))
+                            .font(.body)
+                            .frame(width: 350, height: 55)
+                            .background(Color("Card"))
+                            .cornerRadius(12)
+#endif
                     })
-//#if os(visionOS)
-//                    
-//#else
-                    .buttonStyle(SecondaryButtonStyle())
-//#endif
+#if os(visionOS)
+                    .background(.thinMaterial)
+                    .cornerRadius(28)
+#endif
                 }
                 VStack {
                     ProgressView()
@@ -70,7 +88,11 @@ struct RejoinGameView: View {
             }
             .padding(.all)
             .fullScreenCover(isPresented: $isStartingGame) {
-                PlayerHandWaitingView(playerGame: gameManager)
+#if os(visionOS)
+                GameTableView()
+#else
+                PlayerHandWaitingView()
+#endif
             }
         }
     }
@@ -78,7 +100,8 @@ struct RejoinGameView: View {
 
 struct RejoinGameView_Previews: PreviewProvider {
     static var previews: some View {
-        RejoinGameView(gameManager: PlayerGame(player: Player()))
+        RejoinGameView()
+            .environmentObject(PlayerGame())
     }
 }
 

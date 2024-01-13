@@ -10,7 +10,7 @@ import ConfettiSwiftUI
 
 struct PlayerWonView: View {
     @State var conffetiCount = 0
-    @ObservedObject var playerGame: PlayerGame
+    @EnvironmentObject var playerGame: PlayerGame
     
     var body: some View {
         VStack {
@@ -34,5 +34,6 @@ struct PlayerWonView: View {
 }
 
 #Preview {
-    PlayerWonView(playerGame: PlayerGame(player: Player()))
+    PlayerWonView()
+        .environmentObject(PlayerGame(player: Player()))
 }

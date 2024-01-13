@@ -91,9 +91,11 @@ struct PlayerInfoToTransfer: Codable {
     var gameState: GameState?
     var currentPlaterName: String?
     var currentBetOnTable: Int?
+    var roundNumber: Int?
     
     var requestPlayerList: Bool?
     var playerList: [String]?
+    var playerChipList: [Int]?
     var overridePlayer: Bool? //when this is true, the peerID of the sender will replace what is saved for the player name
     init() {
     
@@ -121,13 +123,16 @@ struct PlayerInfoToTransfer: Codable {
         self.requestPlayerList = requestPlayerList
     }
     
-    init(gameState: GameState, chipsRemaining: Int, currentBet: Int, currentPlayer: String, currentBetOnTable: Int, color: String) {
+    init(gameState: GameState, chipsRemaining: Int, currentBet: Int, currentPlayer: String, currentBetOnTable: Int, color: String, playerList: [Player], roundNumber: Int) {
         self.gameState = gameState
         self.chipsRemaining = chipsRemaining
         self.currentBet = currentBet
         self.currentPlaterName = currentPlayer
         self.currentBetOnTable = currentBetOnTable
         self.color = color
+        self.playerList = playerList.map({$0.name})
+        self.roundNumber = roundNumber
+        self.playerChipList = playerList.map({$0.currentBet})
     }
     
     func getColor()->Color {
@@ -149,8 +154,10 @@ class PlayerGame: NSObject, ObservableObject {
     @Published var chipsOnTable = [[Chip]]()
     @Published var rowCounter = 0
     
-    //list of players for when we disconnect
+    //list of players for when we disconnect or for visionOS
     @Published var players: [String]?
+    var playerChipList: [Int]?
+    @Published var roundNumber: Int?
 
     
     //mulipeer connectivity
@@ -163,6 +170,22 @@ class PlayerGame: NSObject, ObservableObject {
     public var session: MCSession
     
     
+    override init() {
+        player = Player()
+        myPeerID = MCPeerID(displayName: UIDevice.current.name)
+        
+        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .none)
+        serviceAdvertiser = MCNearbyServiceAdvertiser(peer: myPeerID, discoveryInfo: nil, serviceType: serviceType)
+        serviceBrowser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
+        gameState = .waitingSetup
+        
+        tablePeerId = myPeerID //this is replaced when you select a table
+        super.init()
+        
+        browsForTables()
+        
+        setUpChipsUI()
+    }
     init(player: Player) {
         self.player = player
         myPeerID = MCPeerID(displayName: UIDevice.current.name)
@@ -178,7 +201,23 @@ class PlayerGame: NSObject, ObservableObject {
         browsForTables()
         
         setUpChipsUI()
+        players = ["Justin", "mark", "Allison"]
+        currentPlayer = "mark"
     }
+    
+    func addPlayer(player: Player){
+        self.player = player
+    }
+    
+    func getChipsForPlayer(player: String) ->String {
+        if let index = players?.lastIndex(where: {$0 == player}) {
+            if (playerChipList ?? []).indices.contains(index) {
+                return String((playerChipList  ?? [])[index])
+            }
+        }
+        return ""
+    }
+    
     deinit {
         serviceBrowser.stopBrowsingForPeers()
     }
@@ -317,6 +356,9 @@ extension PlayerGame: MCSessionDelegate {
                 self.gameState = playerData.gameState ?? .waitingPlayers
                 self.currentPlayer = playerData.currentPlaterName ?? ""
                 self.currentBetOnTable = playerData.currentBetOnTable ?? 0
+                self.players = playerData.playerList
+                self.playerChipList = playerData.playerChipList
+                self.roundNumber = playerData.roundNumber
                 if self.gameState == .yourTurn {
                     self.isYourTurn = true
                 } else {

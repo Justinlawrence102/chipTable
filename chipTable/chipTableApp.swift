@@ -8,18 +8,22 @@
 import SwiftUI
 
 @main
-struct chipTableApp: App {    
+struct chipTableApp: App {
+    @ObservedObject var gameManager = PlayerGame()
+    
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .environmentObject(gameManager)
         }
         
         #if os(visionOS)
         WindowGroup(id: "GameTable") {
-            GameRealityView()
+            PlayerHandWaitingView()
+                .environmentObject(gameManager)
         }
-        .windowStyle(.volumetric)
-        .defaultSize(width: 12, height: 3, depth: 12, in: .inches)
+        .defaultSize(width: 150, height: 800)
+//        .windowStyle(.volumetric)
         #endif
     }
 }

@@ -10,6 +10,8 @@ import SwiftUI
 struct PlayerCreateView: View {
     @ObservedObject var player = Player()
     @State private var isFindingGame = false
+    @EnvironmentObject var gameManager: PlayerGame
+    
     @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack {
@@ -25,7 +27,7 @@ struct PlayerCreateView: View {
                 .background(.ultraThickMaterial)
                 .cornerRadius(12)
                 .padding(.bottom, 24.0)
-            #else
+            #elseif !os(tvOS)
             TextField( "Name",text: $player.name)
                 .padding(.all)
                 .foregroundColor(Color("Text"))
@@ -86,6 +88,7 @@ struct PlayerCreateView: View {
             Spacer()
             PrimaryButtonView(title: "Find Game", action: {
                 _ in
+                gameManager.addPlayer(player: player)
                 isFindingGame.toggle()
             })
                 .disabled(player.name == "")
@@ -96,7 +99,7 @@ struct PlayerCreateView: View {
         }
         .padding(.all)
         .fullScreenCover(isPresented: $isFindingGame) {
-                FindGameView(gameManager: PlayerGame(player: player))
+                FindGameView()
         }
     }
 }

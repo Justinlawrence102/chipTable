@@ -18,7 +18,7 @@ struct TutorialView1: View {
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color("Red"))
                 Spacer()
-                HStack {
+                ZStack {
                     Image(systemName: "ipad.landscape")
                         .foregroundStyle(Color("Light Red"))
                     .font(Font.system(size: 120))
@@ -26,6 +26,9 @@ struct TutorialView1: View {
                     Image(systemName: "tv")
                         .foregroundStyle(Color("Light Red"))
                         .font(Font.system(size: 120))
+                    Image(systemName: "visionpro")
+                        .foregroundStyle(Color("Light Red"))
+                    .font(Font.system(size: 120))
                 }
                 HStack {
                     Image(systemName: "iphone")

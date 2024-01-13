@@ -115,7 +115,7 @@ struct HomeView: View {
                 })
                 
                 if idiom == .phone {
-                    Text("An iPad is required to act as the table and start the game")
+                    Text("An iPad or Apple TV is required to act as the table and start the game")
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color("Light Red"))
                         .font(Font.system(size: 14, weight: .regular))
@@ -125,7 +125,7 @@ struct HomeView: View {
                 bottomCardView()
                     .sheet(isPresented: $isJoiningGame, content: PlayerCreateView.init)
                     .sheet(isPresented: $isRejoiningGame) {
-                        RejoinGameView(gameManager: PlayerGame(player: Player()))
+                        RejoinGameView()
                     }
             }
             .toolbar {

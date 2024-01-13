@@ -202,7 +202,11 @@ struct ConfigureView: View {
             Spacer()
         }
         .fullScreenCover(isPresented: $isStartingGame) {
+            #if os(visionOS)
+            GameTableView()
+            #else
             GameTableView(game: game)
+            #endif
         }
         .padding([.top, .leading, .trailing], 24.0)
     }

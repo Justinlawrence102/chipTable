@@ -237,7 +237,7 @@ class Game: NSObject, ObservableObject {
 //            if isPlayingNow(player: player) {
 //                player.isMyTurn = true
 //            }
-            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: getCurrentPlayer().name, currentBetOnTable: currentBetOnTable, color: player.getColorString())
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: getCurrentPlayer().name, currentBetOnTable: currentBetOnTable, color: player.getColorString(), playerList: players, roundNumber: round)
             if (currentPlayerIndex == player.orderIndex) {
                 gameDataToTransfer.gameState = .yourTurn
             }
@@ -254,7 +254,7 @@ class Game: NSObject, ObservableObject {
     }
     func sendGameOverData() {
         for player in players {
-            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .endOfGame, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: playersWithChips().first?.name ?? "Player", currentBetOnTable: currentBetOnTable, color: player.getColorString())
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .endOfGame, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: playersWithChips().first?.name ?? "Player", currentBetOnTable: currentBetOnTable, color: player.getColorString(), playerList: players, roundNumber: round)
             if player.name == playersWithChips().first?.name {
                 gameDataToTransfer.gameState = .playerWon
             }
@@ -333,7 +333,10 @@ extension Game: MCSessionDelegate {
                 if let currentBet = playerData.currentBet {
                     let previousHighestBet = self.currentBetOnTable
                     
-                    let newChipsAdded = currentBet - self.players[self.currentPlayerIndex].currentBet
+                    var newChipsAdded = currentBet - self.players[self.currentPlayerIndex].currentBet
+                    if playerData.folded ?? false {
+                        newChipsAdded = 0
+                    }
                     self.addChipsToTable(count: newChipsAdded, color: self.players[self.currentPlayerIndex].color)
                     
                     self.players[self.currentPlayerIndex].updateFromTransfer(transfer: playerData)

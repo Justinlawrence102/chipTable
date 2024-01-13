@@ -10,9 +10,14 @@ import SwiftUI
 
 #if os(visionOS)
 struct GameRealityView: View {
+    @EnvironmentObject var gameManager: PlayerGame
+    
     var body: some View {
 //        RealityView {_ in 
+        VStack {
             Text("Hello?")
+            Text(gameManager.player.name)
+        }
 //        }
 //        ZStack{
 //            Rectangle()
