@@ -205,12 +205,10 @@ struct GameTableView: View {
             
             VStack {
                 Spacer()
-                Button(action: {
+                PrimaryButtonView(title: "Round Over", action: {
+                    _ in
                     game.showingWinnerSelectModal.toggle()
-                }) {
-                    Text("Round Over")
-                }
-                .buttonStyle(PrimaryButton())
+                })
             }
             VStack {
                 Spacer()

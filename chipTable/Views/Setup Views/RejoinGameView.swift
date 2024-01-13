@@ -10,12 +10,20 @@ import SwiftUI
 struct RejoinGameView: View {
     @ObservedObject var gameManager: PlayerGame
     @State private var isStartingGame = false
+    @Environment(\.dismiss) var dismiss
+
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Find Games")
-                    .font(Font.system(size: 24, weight: .semibold))
-                .foregroundColor(Color("Blue"))
+                HStack {
+                    Spacer()
+                    Text("Find Games")
+                        .font(.title2.weight(.semibold))
+                    .foregroundColor(Color("Text"))
+                    Spacer()
+                }.overlay(alignment: .topTrailing) {
+                    xButton(dismiss: _dismiss)
+                }
                 
                 ForEach(gameManager.availableGames, id: \.self)  {
                     peerId in
@@ -24,13 +32,11 @@ struct RejoinGameView: View {
                             if let players = gameManager.players {
                                 ForEach(players, id: \.self) {
                                     player in
-                                    Button(action: {
+                                    SecondaryButtonView(title: player, action: {
+                                        _ in
                                         gameManager.rejoinGame(player: player)
                                         isStartingGame.toggle()
-                                    }, label: {
-                                        Text(player)
                                     })
-                                    .buttonStyle(SecondaryButton())
                                 }
                             }else {
                                 ProgressView()
@@ -41,8 +47,15 @@ struct RejoinGameView: View {
                         }
                     }, label: {
                         Text(peerId.displayName)
+//#if os(visionOS)
+//                            .frame(width: 300, height: 55)
+//#endif
                     })
-                    .buttonStyle(SecondaryButton())
+//#if os(visionOS)
+//                    
+//#else
+                    .buttonStyle(SecondaryButtonStyle())
+//#endif
                 }
                 VStack {
                     ProgressView()

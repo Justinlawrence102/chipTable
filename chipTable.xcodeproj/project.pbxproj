@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		985F95C92B4F2D9200B91D84 /* GameRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985F95C82B4F2D9200B91D84 /* GameRealityView.swift */; };
 		988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988438A52B49B6C400F05777 /* RejoinGameView.swift */; };
 		988438A92B4B991A00F05777 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 988438A82B4B991A00F05777 /* ConfettiSwiftUI */; };
 		988438AB2B4C766A00F05777 /* PlayerWonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988438AA2B4C766A00F05777 /* PlayerWonView.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		985F95C82B4F2D9200B91D84 /* GameRealityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRealityView.swift; sourceTree = "<group>"; };
 		988438A52B49B6C400F05777 /* RejoinGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejoinGameView.swift; sourceTree = "<group>"; };
 		988438AA2B4C766A00F05777 /* PlayerWonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerWonView.swift; sourceTree = "<group>"; };
 		988DADFA296873B30084C50C /* PlayerHandWaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerHandWaitingView.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				988DADFC29687C930084C50C /* PlayerPlayingView.swift */,
 				98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */,
 				98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */,
+				985F95C82B4F2D9200B91D84 /* GameRealityView.swift */,
 			);
 			path = "Game Views";
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				98CD44642967776F00680CEE /* FindGameView.swift in Sources */,
 				98CD446729677B0B00680CEE /* Player.swift in Sources */,
 				98CD446F29685C6700680CEE /* GameTableView.swift in Sources */,
+				985F95C92B4F2D9200B91D84 /* GameRealityView.swift in Sources */,
 				98CC58AE29685D8E00D73B01 /* viewElemements.swift in Sources */,
 				98CD446929677BF700680CEE /* PlayerCreateView.swift in Sources */,
 				988DADFD29687C930084C50C /* PlayerPlayingView.swift in Sources */,
@@ -399,11 +403,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.justinLawrence.chipTable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,3";
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
 				TVOS_DEPLOYMENT_TARGET = 17;
 			};
 			name = Debug;
@@ -443,11 +447,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.justinLawrence.chipTable;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,3";
+				TARGETED_DEVICE_FAMILY = "1,2,3,7";
 				TVOS_DEPLOYMENT_TARGET = 17;
 			};
 			name = Release;

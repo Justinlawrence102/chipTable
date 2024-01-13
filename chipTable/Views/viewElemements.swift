@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct PrimaryButton: ButtonStyle {
+struct PrimaryButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -20,7 +20,7 @@ struct PrimaryButton: ButtonStyle {
     }
 }
 
-struct SecondaryButton: ButtonStyle {
+struct SecondaryButtonStyle: ButtonStyle {
     var backgroundColor = Color("Card")
     var titleColor = Color("Light Blue")
     
@@ -33,23 +33,116 @@ struct SecondaryButton: ButtonStyle {
             .cornerRadius(12)
     }
 }
+struct PrimaryButtonView: View{
+    var title: String
+    var action : ((Bool) -> Void)
+
+    var body: some View {
+#if os(visionOS)
+        Button(action: {
+            print(title)
+            action(true)
+        }) {
+            Text(title)
+                .frame(width: 300, height: 55)
+        }
+        .background(Color("Light Blue"))
+        .cornerRadius(28)
+#else
+        Button(action: {
+            print(title)
+            action(true)
+        }) {
+            Text(title)
+                .foregroundColor(Color.white)
+                .font(.body)
+                .frame(width: 350, height: 55)
+                .background(Color("Light Blue"))
+                .cornerRadius(12)
+        }
+//        .buttonStyle(PrimaryButtonStyle())
+#endif
+    }
+}
+
+struct SecondaryButtonView: View{
+    var title: String
+    var action : ((Bool) -> Void)
+    
+    var body: some View {
+#if os(visionOS)
+        Button(action: {
+            print(title)
+            action(true)
+        }) {
+            Text(title)
+                .frame(width: 300, height: 60)
+        }
+        .background(.thinMaterial)
+        .cornerRadius(28)
+#else
+        Button(action: {
+            print(title)
+            action(true)
+        }) {
+            Text(title)
+                .foregroundColor(Color("Light Blue"))
+                .font(.body)
+                .frame(width: 350, height: 55)
+                .background(Color("Card"))
+                .cornerRadius(12)
+        }
+//        .buttonStyle(SecondaryButtonStyle())
+#endif
+    }
+}
 struct buttonView: View {
     var title: String
     var backgroundColor = Color("Light Blue")
     var titleColor = Color.white
     var body: some View {
-//        if UIDevice.current.userInterfaceIdiom != .tv {
-            Text(title)
-                .foregroundColor(titleColor)
-//                .font(Font.system(size: 20, weight: .medium))
-                .font(.body)
-                .frame(width: 400, height: 70)
-                .background(backgroundColor)
-                .cornerRadius(12)
-//        }else {
-//            Text(title)
-////                .buttonStyle(.card)
-//        }
+        Text(title)
+            .foregroundColor(titleColor)
+            .font(.body)
+            .frame(width: 400, height: 70)
+            .background(backgroundColor)
+            .cornerRadius(12)
+    }
+}
+
+struct xButton: View {
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+#if os(visionOS)
+            Button(action: {
+                print("Exit")
+                dismiss()
+            }, label: {
+                ZStack {
+                    Image(systemName: "xmark")
+                }
+            })
+            .padding()
+            .frame(width: 33, height: 33)
+            .cornerRadius(20)
+#else
+            Button(action: {
+                print("Exit")
+                dismiss()
+            }, label: {
+                ZStack {
+                    Image(systemName: "xmark")
+                }
+                .font(Font.callout.weight(.semibold))
+                .foregroundStyle(Color.gray)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(20)
+            })
+            .frame(width: 33, height: 33)
+            .cornerRadius(20)
+#endif
     }
 }
 

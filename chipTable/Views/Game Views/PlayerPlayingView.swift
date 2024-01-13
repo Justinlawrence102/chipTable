@@ -21,38 +21,27 @@ struct PlayerPlayingView: View {
                     .foregroundColor(Color("Light Red"))
                 
                 PlayerChipCountView(player: playerGame.player)
-                Button(action: {
+                PrimaryButtonView(title: "Match Bet", action: {
+                    _ in
                     playerGame.matchBet()
-                    print("Match")
-                }) {
-                    Text("Match Bet")
-                }
-                .buttonStyle(PrimaryButton())
-                
-                Button(action: {
+                })
+                PrimaryButtonView(title: "Raise + 1", action: {
+                    _ in
                     print("Raise 1")
                     playerGame.raise1()
-                }) {
-                    Text("Raise + 1")
-                }
-                .buttonStyle(PrimaryButton())
-                
+                })
                 Spacer()
-                Button(action: {
+                PrimaryButtonView(title: "Send Chips", action: {
+                    _ in
                     print("Send Chips")
                     playerGame.sendChips()
-                }) {
-                    Text("Send Chips")
-                }
-                .buttonStyle(PrimaryButton())
+                })
                 
-                Button(action: {
+                SecondaryButtonView(title: "Fold", action: {
+                    _ in
                     playerGame.fold()
                     print("Fold")
-                }) {
-                    Text("Fold")
-                }
-                .buttonStyle(SecondaryButton())
+                })
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.horizontal, 40.0)

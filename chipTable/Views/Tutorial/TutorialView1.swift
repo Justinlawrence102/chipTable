@@ -39,14 +39,12 @@ struct TutorialView1: View {
                         .font(Font.system(size: 100))
                 }
                 Spacer()
-                Button(action: {
+                SecondaryButtonView(title: "Continue", action: {
+                    _ in
                     withAnimation {
                         selectedTabView = 2
                     }
-                }, label: {
-                    Text("Continue")
                 })
-                .buttonStyle(SecondaryButton())
             }
             .tag(1)
             .padding()
@@ -78,14 +76,12 @@ struct TutorialView1: View {
                         .padding(.top, -55)
                 }
                 Spacer()
-                Button(action: {
+                SecondaryButtonView(title: "Continue", action: {
+                    _ in
                     withAnimation {
                         selectedTabView = 3
                     }
-                }, label: {
-                    Text("Continue")
                 })
-                .buttonStyle(SecondaryButton())
             }
             .padding()
             .tag(2)
@@ -99,12 +95,10 @@ struct TutorialView1: View {
                     .foregroundStyle(Color("Light Red"))
                     .font(Font.system(size: 250))
                 Spacer()
-                Button(action: {
+                PrimaryButtonView(title: "Get Started", action: {
+                    _ in
                     showingTutorial = false
-                }, label: {
-                    Text("Get Started")
                 })
-                .buttonStyle(PrimaryButton())
             }
             .padding()
             .tag(3)

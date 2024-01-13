@@ -188,14 +188,12 @@ struct ConfigureView: View {
                     .background(Color("Card"))
                     .cornerRadius(16)
                     Spacer()
-                    Button(action: {
+                    PrimaryButtonView(title: "Confirm and Start", action: {
+                        _ in
                         print("Confirm and Start")
                         isStartingGame.toggle()
                         game.setUpGame()
-                    }) {
-                        Text("Confirm and Start")
-                    }
-                    .buttonStyle(PrimaryButton())
+                    })
                     .disabled(game.players.isEmpty)
                 }
                 .frame(maxWidth: .infinity)

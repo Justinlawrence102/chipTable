@@ -13,5 +13,13 @@ struct chipTableApp: App {
         WindowGroup {
             HomeView()
         }
+        
+        #if os(visionOS)
+        WindowGroup(id: "GameTable") {
+            GameRealityView()
+        }
+        .windowStyle(.volumetric)
+        .defaultSize(width: 12, height: 3, depth: 12, in: .inches)
+        #endif
     }
 }

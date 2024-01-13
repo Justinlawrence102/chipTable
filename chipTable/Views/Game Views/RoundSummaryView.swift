@@ -87,14 +87,12 @@ struct RoundSummaryView: View {
                 }
             }
             Spacer()
-            Button(action: {
+            PrimaryButtonView(title: "Next Round", action: {
+                _ in
                 print("Select winner!")
                 game.goToNextRound()
                 game.showingWinnerSelectModal = false
-            }) {
-                Text("Next Round")
-            }
-            .buttonStyle(PrimaryButton())
+            })
         }
         .padding([.leading, .bottom, .trailing])
         .padding(.top, -25)

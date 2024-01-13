@@ -19,14 +19,12 @@ struct SelectWinnerView: View {
                         .foregroundColor(Color("Blue"))
                     ForEach(game.players) {
                         player in
-                        Button(action: {
+                        PrimaryButtonView(title: player.name, action: {
+                            _ in
                             print("Select winner!")
                             game.selectWinner(player: player)
                             isShowingWinner.toggle()
-                        }) {
-                            Text(player.name)
-                        }
-                        .buttonStyle(PrimaryButton())
+                        })
                     }
                     Spacer()
                 }

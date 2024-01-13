@@ -10,31 +10,61 @@ import SwiftUI
 struct PlayerCreateView: View {
     @ObservedObject var player = Player()
     @State private var isFindingGame = false
-    
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack {
             Text("Setup")
-                .font(Font.system(size: 24, weight: .semibold))
-            .foregroundColor(Color("Blue"))
+                .font(.title2.weight(.semibold))
+            .foregroundColor(Color("Text"))
+            #if os(visionOS)
             TextField( "Name",text: $player.name)
                 .padding(.all)
-                .foregroundColor(Color("Red"))
+                .foregroundColor(Color("Text"))
                 .font(Font.system(size: 18))
                 .frame(height: 50)
-                .background(Color("Card"))
+                .background(.ultraThickMaterial)
                 .cornerRadius(12)
                 .padding(.bottom, 24.0)
-            
+            #else
+            TextField( "Name",text: $player.name)
+                .padding(.all)
+                .foregroundColor(Color("Text"))
+                .font(Font.system(size: 18))
+                .frame(height: 50)
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(12)
+                .padding(.bottom, 24.0)
+            #endif
             HStack {
                 Text("Chip Color")
                     .font(Font.system(size: 22, weight: .semibold))
-                .foregroundColor(Color("Red"))
+                .foregroundColor(Color("Text"))
                 Spacer()
             }
             ScrollView(.horizontal) {
                 HStack(spacing: 25.0) {
                     ForEach(player.getColorOptions(), id: \.self) { color in
+#if os(visionOS)
+                        Button(action: {
+                            player.color = color
+                            print("Selected Color")
+                        }) {
+                            ZStack {
+                                if color == player.color {
+                                    Circle()
+                                        .strokeBorder(.ultraThinMaterial, lineWidth: 12)
+                                        .frame(width: 60, height: 60)
+                                }else {
+                                    Spacer()
+                                        .frame(width: 60, height: 60)
+                                }
+                            }
+                        }
+                        .frame(width: 60, height: 60)
+                        .background(color)
+                        .cornerRadius(30)
                         
+#else
                         Button(action: {
                             player.color = color
                             print("Selected Color")
@@ -43,30 +73,41 @@ struct PlayerCreateView: View {
                                 if color == player.color {
                                     Circle()
                                         .strokeBorder(Color("Light Blue"), lineWidth: 5)
-                                        .frame(width: 75, height: 75)
                                 }
                                 Circle()
-                                    .foregroundColor(color)
-                                .frame(width: 60, height: 60)
+                                    .frame(width: 60, height: 60)
                             }
                         }
+                        .buttonStyle(CircleButton(color: color))
+#endif
                     }
                 }
             }
             Spacer()
-            Button(action: {
+            PrimaryButtonView(title: "Find Game", action: {
+                _ in
                 isFindingGame.toggle()
-                print("Find Game")
-            }) {
-                Text("Find Game")
-            }
-            .buttonStyle(PrimaryButton())
-            .disabled(player.name == "")
+            })
+                .disabled(player.name == "")
+
+        }
+        .overlay(alignment: .topTrailing) {
+            xButton(dismiss: _dismiss)
         }
         .padding(.all)
         .fullScreenCover(isPresented: $isFindingGame) {
                 FindGameView(gameManager: PlayerGame(player: player))
         }
+    }
+}
+
+struct CircleButton: ButtonStyle {
+    var color = Color("Card")
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(color)
+            .frame(width: 75, height: 75)
     }
 }
 

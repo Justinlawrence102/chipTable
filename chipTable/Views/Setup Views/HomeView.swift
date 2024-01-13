@@ -72,7 +72,7 @@ struct HomeView: View {
                     HStack {
                         Text("Welcome To")
                             .font(.largeTitle.weight(.bold))
-                            .foregroundColor(Color("Text"))
+                            .foregroundColor(Color("Blue"))
                         Text("Chip Table")
                             .font(.largeTitle.weight(.bold))
                             .foregroundColor(Color("Red"))
@@ -82,7 +82,7 @@ struct HomeView: View {
                     VStack {
                         Text("Welcome To")
                             .font(.largeTitle.weight(.bold))
-                            .foregroundColor(Color("Text"))
+                            .foregroundColor(Color("Blue"))
                         Text("Chip Table")
                             .font(.largeTitle.weight(.bold))
                             .foregroundColor(Color("Red"))
@@ -95,33 +95,24 @@ struct HomeView: View {
                     }, label:  {
                         Text("Start Game")
                     })
-                    .buttonStyle(PrimaryButton())
+                    .buttonStyle(PrimaryButtonStyle())
                 }
                 if (idiom == .pad) {
-                    Button(action: {
-                        print("Join Game")
+                    SecondaryButtonView(title: "Join Game", action: {
+                        _ in
                         isJoiningGame.toggle()
-                    }) {
-                        Text("Join Game")
-                    }
-                    .buttonStyle(SecondaryButton())
+                    })
                 }else {
-                    Button(action: {
-                        print("Join Game")
+                    PrimaryButtonView(title: "Join Game", action: {
+                        _ in
                         isJoiningGame.toggle()
-                    }) {
-                        Text("Join Game")
-                    }
-                    .buttonStyle(PrimaryButton())
+                    })
                 }
                 
-                Button(action: {
-                    print("Rejoin Game")
+                SecondaryButtonView(title: "Rejoin Game", action: {
+                    _ in
                     isRejoiningGame.toggle()
-                }) {
-                    Text("Rejoin Exisitng Game")
-                }
-                .buttonStyle(SecondaryButton())
+                })
                 
                 if idiom == .phone {
                     Text("An iPad is required to act as the table and start the game")

@@ -10,21 +10,25 @@ import SwiftUI
 struct FindGameView: View {
     @ObservedObject var gameManager: PlayerGame
     @State private var isStartingGame = false
+    @Environment(\.openWindow) private var openWindow
     var body: some View {
         VStack {
             Text("Find Games")
-                .font(Font.system(size: 24, weight: .semibold))
-            .foregroundColor(Color("Blue"))
+                .font(.title2.weight(.semibold))
+            .foregroundColor(Color("Text"))
             
             ForEach(gameManager.availableGames, id: \.self)  {
                 peerId in
-                Button(action: {
+                SecondaryButtonView(title: peerId.displayName, action: {
+                    _ in
+                    #if os(visionOS)
+                    gameManager.didSelectGame(gameId: peerId)
+                    openWindow(id: "GameTable")
+                    #else
                     gameManager.didSelectGame(gameId: peerId)
                     isStartingGame.toggle()
-                }) {
-                    Text(peerId.displayName)
-                }
-                .buttonStyle(SecondaryButton())
+                    #endif
+                })
             }
             VStack {
                 ProgressView()
