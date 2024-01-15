@@ -16,6 +16,9 @@
 		98AA5F492969E14500D3BE7C /* SelectWinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */; };
 		98AA5F4B2969E4AB00D3BE7C /* RoundSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */; };
 		98B8B2582B4C7C24009AD645 /* TutorialView1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B8B2572B4C7C24009AD645 /* TutorialView1.swift */; };
+		98CB60652B55D66E00ECB828 /* TutorialView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CB60642B55D66E00ECB828 /* TutorialView2.swift */; };
+		98CB60672B55D6BE00ECB828 /* TutorialView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CB60662B55D6BE00ECB828 /* TutorialView3.swift */; };
+		98CB60692B55D70200ECB828 /* TutorialTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CB60682B55D70200ECB828 /* TutorialTabView.swift */; };
 		98CC58AE29685D8E00D73B01 /* viewElemements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CC58AD29685D8E00D73B01 /* viewElemements.swift */; };
 		98CD4451296753EB00680CEE /* chipTableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CD4450296753EB00680CEE /* chipTableApp.swift */; };
 		98CD4453296753EB00680CEE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98CD4452296753EB00680CEE /* HomeView.swift */; };
@@ -38,6 +41,9 @@
 		98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWinnerView.swift; sourceTree = "<group>"; };
 		98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundSummaryView.swift; sourceTree = "<group>"; };
 		98B8B2572B4C7C24009AD645 /* TutorialView1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView1.swift; sourceTree = "<group>"; };
+		98CB60642B55D66E00ECB828 /* TutorialView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView2.swift; sourceTree = "<group>"; };
+		98CB60662B55D6BE00ECB828 /* TutorialView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView3.swift; sourceTree = "<group>"; };
+		98CB60682B55D70200ECB828 /* TutorialTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialTabView.swift; sourceTree = "<group>"; };
 		98CC58AD29685D8E00D73B01 /* viewElemements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = viewElemements.swift; sourceTree = "<group>"; };
 		98CD444D296753EB00680CEE /* chipTable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chipTable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		98CD4450296753EB00680CEE /* chipTableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chipTableApp.swift; sourceTree = "<group>"; };
@@ -69,7 +75,10 @@
 		98B8B2592B4C7C2C009AD645 /* Tutorial */ = {
 			isa = PBXGroup;
 			children = (
+				98CB60682B55D70200ECB828 /* TutorialTabView.swift */,
 				98B8B2572B4C7C24009AD645 /* TutorialView1.swift */,
+				98CB60642B55D66E00ECB828 /* TutorialView2.swift */,
+				98CB60662B55D6BE00ECB828 /* TutorialView3.swift */,
 			);
 			path = Tutorial;
 			sourceTree = "<group>";
@@ -239,13 +248,16 @@
 				988DADFB296873B30084C50C /* PlayerHandWaitingView.swift in Sources */,
 				98AA5F4B2969E4AB00D3BE7C /* RoundSummaryView.swift in Sources */,
 				98CD4451296753EB00680CEE /* chipTableApp.swift in Sources */,
+				98CB60672B55D6BE00ECB828 /* TutorialView3.swift in Sources */,
 				988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */,
 				988438AB2B4C766A00F05777 /* PlayerWonView.swift in Sources */,
 				98CD44642967776F00680CEE /* FindGameView.swift in Sources */,
 				98CD446729677B0B00680CEE /* Player.swift in Sources */,
+				98CB60652B55D66E00ECB828 /* TutorialView2.swift in Sources */,
 				98CD446F29685C6700680CEE /* GameTableView.swift in Sources */,
 				985F95C92B4F2D9200B91D84 /* GameRealityView.swift in Sources */,
 				98CC58AE29685D8E00D73B01 /* viewElemements.swift in Sources */,
+				98CB60692B55D70200ECB828 /* TutorialTabView.swift in Sources */,
 				98CD446929677BF700680CEE /* PlayerCreateView.swift in Sources */,
 				988DADFD29687C930084C50C /* PlayerPlayingView.swift in Sources */,
 				98CD446229675AE900680CEE /* ConfigureView.swift in Sources */,

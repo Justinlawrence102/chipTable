@@ -164,6 +164,8 @@ struct GameTableView: View {
     
     var body: some View {
         ZStack {
+            CardSpaceView(game: gameManager)
+                .frame(width: 800, height: 400)
             VStack {
                 HStack(alignment: .top) {
                     Text("Round \(gameManager.roundNumber ?? 1)")
@@ -302,6 +304,18 @@ struct TableView_Previews: PreviewProvider {
     }
 }
 
+#if os(visionOS)
+struct CardSpaceView: View {
+    @ObservedObject var game: PlayerGame
+    var body: some View {
+        ForEach(game.chipsOnTableDecoded, id: \.self) {
+            chip in
+            ChipView(color: chip.color)
+                .position(x: CGFloat(chip.x), y: CGFloat(chip.y))
+        }
+    }
+}
+#else
 struct CardSpaceView: View {
     @ObservedObject var game: Game
     var body: some View {
@@ -312,6 +326,7 @@ struct CardSpaceView: View {
         }
     }
 }
+#endif
 
 struct ChipView: View {
     var color: Color

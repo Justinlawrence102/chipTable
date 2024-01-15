@@ -79,8 +79,10 @@ struct PlayerCreateView: View {
                                 Circle()
                                     .frame(width: 60, height: 60)
                             }
+                            .foregroundColor(color)
+                            .frame(width: 75, height: 75)
                         }
-                        .buttonStyle(CircleButton(color: color))
+                        .padding(.trailing, -20)
 #endif
                     }
                 }

@@ -115,7 +115,7 @@ struct HomeView: View {
                 })
                 
                 if idiom == .phone {
-                    Text("An iPad or Apple TV is required to act as the table and start the game")
+                    Text("An iPad or Apple TV is required to be the table and start the game")
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color("Light Red"))
                         .font(Font.system(size: 14, weight: .regular))
@@ -139,7 +139,7 @@ struct HomeView: View {
             }
             .padding([.leading, .bottom, .trailing], 24.0)
             .sheet(isPresented: $showingTutorialSheet) {
-                TutorialView1(selectedTabView: 0, showingTutorial: $showingTutorialSheet)
+                TutorialTabView(selectedTabView: 0, showingTutorial: $showingTutorialSheet)
             }
         }
     }

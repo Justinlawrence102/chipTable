@@ -96,6 +96,7 @@ struct PlayerInfoToTransfer: Codable {
     var requestPlayerList: Bool?
     var playerList: [String]?
     var playerChipList: [Int]?
+    var chipsOnTable: [String]?
     var overridePlayer: Bool? //when this is true, the peerID of the sender will replace what is saved for the player name
     init() {
     
@@ -123,16 +124,17 @@ struct PlayerInfoToTransfer: Codable {
         self.requestPlayerList = requestPlayerList
     }
     
-    init(gameState: GameState, chipsRemaining: Int, currentBet: Int, currentPlayer: String, currentBetOnTable: Int, color: String, playerList: [Player], roundNumber: Int) {
+    init(gameState: GameState, player: Player, game: Game) {
         self.gameState = gameState
-        self.chipsRemaining = chipsRemaining
-        self.currentBet = currentBet
-        self.currentPlaterName = currentPlayer
-        self.currentBetOnTable = currentBetOnTable
-        self.color = color
-        self.playerList = playerList.map({$0.name})
-        self.roundNumber = roundNumber
-        self.playerChipList = playerList.map({$0.currentBet})
+        self.chipsRemaining = player.chipsRemaining
+        self.currentBet = player.currentBet
+        self.currentPlaterName = game.getCurrentPlayer().name
+        self.currentBetOnTable = game.currentBetOnTable
+        self.color = player.getColorString()
+        self.playerList = game.players.map({$0.name})
+        self.roundNumber = game.round
+        self.playerChipList = game.players.map({$0.currentBet})
+        self.chipsOnTable = game.chips.map({"\($0.x),\($0.y),\($0.getColorString())"})
     }
     
     func getColor()->Color {
@@ -151,14 +153,25 @@ class PlayerGame: NSObject, ObservableObject {
     @Published var isYourTurn = false
     @Published var gameOver = false
     
-    @Published var chipsOnTable = [[Chip]]()
+    @Published var playersChips = [[Chip]]()
     @Published var rowCounter = 0
     
     //list of players for when we disconnect or for visionOS
     @Published var players: [String]?
     var playerChipList: [Int]?
     @Published var roundNumber: Int?
-
+    var chipsOnTable: [String]?
+    var chipsOnTableDecoded: [Chip] {
+        var chipList = [Chip]()
+        for chip in chipsOnTable ?? [] {
+            let comp = chip.components(separatedBy: ",")
+            if comp.indices.contains(2) {
+//                let test = Color(comp[2])
+                chipList.append(Chip(x: Int(comp[0]) ?? 0, y: Int(comp[1]) ?? 0, color: Color(comp[2])))
+            }
+        }
+        return chipList
+    }
     
     //mulipeer connectivity
     private let serviceType = "chipTable-serv"
@@ -261,14 +274,14 @@ class PlayerGame: NSObject, ObservableObject {
         }
     }
     func setUpChipsUI() {
-        chipsOnTable.removeAll()
+        playersChips.removeAll()
         rowCounter = -1
         for i in 0..<player.chipsRemaining {
             if i%10 == 0 {
-                chipsOnTable.append([Chip(color: player.color)])
+                playersChips.append([Chip(color: player.color)])
                 rowCounter += 1
             }else {
-                chipsOnTable[rowCounter].append(Chip(color: player.color))
+                playersChips[rowCounter].append(Chip(color: player.color))
             }
         }
     }
@@ -359,6 +372,7 @@ extension PlayerGame: MCSessionDelegate {
                 self.players = playerData.playerList
                 self.playerChipList = playerData.playerChipList
                 self.roundNumber = playerData.roundNumber
+                self.chipsOnTable = playerData.chipsOnTable
                 if self.gameState == .yourTurn {
                     self.isYourTurn = true
                 } else {

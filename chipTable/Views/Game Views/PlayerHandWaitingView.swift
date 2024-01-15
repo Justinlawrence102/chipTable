@@ -19,7 +19,7 @@ struct PlayerHandWaitingView: View {
                     { i in
                         VStack(spacing: -61.0)
                         {
-                            ForEach(playerGame.chipsOnTable[i]) {
+                            ForEach(playerGame.playersChips[i]) {
                                 chip in
                                 ChipView(color: chip.color)
                             }
@@ -81,7 +81,7 @@ struct PlayerHandWaitingView: View {
                     { i in
                         VStack(spacing: -61.0)
                         {
-                            ForEach(playerGame.chipsOnTable[i]) {
+                            ForEach(playerGame.playersChips[i]) {
                                 chip in
                                 ChipView(color: chip.color)
                             }

@@ -8,112 +8,116 @@
 import SwiftUI
 
 struct TutorialView1: View {
-    @State var selectedTabView: Int
-    @Binding var showingTutorial: Bool
+    @Binding var selectedTabView: Int
+    
+    @State var ipadOffset = CGFloat(0)
+    @State var tvOffset = CGFloat(100)
+    @State var visionOffset = CGFloat(100)
+    @State var ipadOpactity = Double(1)
+    @State var tvOpactity = Double(0)
+    @State var visionOpactity = Double(0)
+    @State var deviceName = "iPad"
+    @State var runningAnimation = true
     var body: some View {
-        TabView(selection: $selectedTabView) {
+        VStack {
             VStack {
-                Text("Use an iPad as your Chip Table")
-                    .font(.title.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(Color("Red"))
-                Spacer()
-                ZStack {
-                    Image(systemName: "ipad.landscape")
-                        .foregroundStyle(Color("Light Red"))
-                    .font(Font.system(size: 120))
-                    
-                    Image(systemName: "tv")
-                        .foregroundStyle(Color("Light Red"))
-                        .font(Font.system(size: 120))
-                    Image(systemName: "visionpro")
-                        .foregroundStyle(Color("Light Red"))
-                    .font(Font.system(size: 120))
-                }
                 HStack {
-                    Image(systemName: "iphone")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 100))
-                    Image(systemName: "iphone")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 100))
-                    Image(systemName: "iphone")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 100))
+                    Text("Use your ")
+                    Text(deviceName)
                 }
-                Spacer()
-                SecondaryButtonView(title: "Continue", action: {
-                    _ in
-                    withAnimation {
-                        selectedTabView = 2
-                    }
-                })
+                Text(" as a Chip Table")
             }
-            .tag(1)
-            .padding()
-            VStack {
-                Text("Connect your iOS devices to join the game")
-                    .font(.title.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(Color("Red"))
-                Spacer()
-                HStack {
-                    Image(systemName: "iphone")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 150))
-                        .padding(.trailing, 33)
-                        .padding(.top, -55)
-                    Image(systemName: "iphone.gen1")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 150))
-                        .padding(.top, 32)
-                }
-                HStack {
-                    Image(systemName: "iphone")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 150))
-                    Image(systemName: "ipad")
-                        .foregroundStyle(Color("Light Blue"))
-                        .font(Font.system(size: 150))
-                        .padding(.trailing, 33)
-                        .padding(.top, -55)
-                }
-                Spacer()
-                SecondaryButtonView(title: "Continue", action: {
-                    _ in
-                    withAnimation {
-                        selectedTabView = 3
-                    }
-                })
-            }
-            .padding()
-            .tag(2)
-            VStack {
-                Text("Play locally with no Internet required")
-                    .font(.title.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(Color("Red"))
-                Spacer()
-                Image(systemName: "wifi.slash")
+            .font(.title.weight(.semibold))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Color("Red"))
+            Spacer()
+            ZStack {
+                Image(systemName: "ipad.landscape")
                     .foregroundStyle(Color("Light Red"))
-                    .font(Font.system(size: 250))
-                Spacer()
-                PrimaryButtonView(title: "Get Started", action: {
-                    _ in
-                    showingTutorial = false
-                })
+                    .font(Font.system(size: 120))
+                    .offset(x: ipadOffset)
+                    .opacity(ipadOpactity)
+                
+                Image(systemName: "tv")
+                    .foregroundStyle(Color("Light Red"))
+                    .font(Font.system(size: 120))
+                    .offset(x: tvOffset)
+                    .opacity(tvOpactity)
+                Image(systemName: "visionpro")
+                    .foregroundStyle(Color("Light Red"))
+                    .font(Font.system(size: 120))
+                    .offset(x: visionOffset)
+                    .opacity(visionOpactity)
             }
-            .padding()
-            .tag(3)
+            HStack {
+                Image(systemName: "iphone")
+                    .foregroundStyle(Color("Light Blue"))
+                    .font(Font.system(size: 100))
+                Image(systemName: "iphone")
+                    .foregroundStyle(Color("Light Blue"))
+                    .font(Font.system(size: 100))
+                Image(systemName: "iphone")
+                    .foregroundStyle(Color("Light Blue"))
+                    .font(Font.system(size: 100))
+            }
+            Spacer()
+            SecondaryButtonView(title: "Continue", action: {
+                _ in
+                withAnimation {
+                    selectedTabView = 2
+                }
+            })
         }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-        .background(Color("Blue"))
+        .task(firstPageAnimations)
+        .onAppear(){
+            runningAnimation = true
+        }
+        .onDisappear(){
+            runningAnimation = false
+        }
+        
+        //        .onAppear() {
+        //            try? await Task.sleep(12000)
+        //        }
+        .padding()
+    }
+    private func firstPageAnimations() async {
+        if runningAnimation {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            withAnimation(){
+                deviceName = "Apple TV"
+                ipadOffset = -100
+                ipadOpactity = 0
+                tvOffset = 0
+                tvOpactity = 1
+                visionOffset = 100
+            }
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            withAnimation(){
+                deviceName = "Apple Vision Pro"
+                tvOffset = -100
+                tvOpactity = 0
+                visionOffset = 0
+                visionOpactity = 1
+                ipadOffset = 100
+            }
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            withAnimation(){
+                deviceName = "iPad"
+                visionOffset = -100
+                visionOpactity = 0
+                ipadOffset = 0
+                ipadOpactity = 1
+                tvOffset = 100
+            }
+            await firstPageAnimations()
+        }
     }
 }
 
-struct AddContainer_Previews: PreviewProvider {
-  @State static var isShowing = false
+struct Turorial1_Previews: PreviewProvider {
+  @State static var isShowing = 1
   static var previews: some View {
-      TutorialView1(selectedTabView: 1, showingTutorial: $isShowing)
+      TutorialView1(selectedTabView: $isShowing)
   }
 }

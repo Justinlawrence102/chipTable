@@ -9,7 +9,14 @@ import Foundation
 import SwiftUI
 import MultipeerConnectivity
 
-class Chip: ObservableObject, Identifiable{
+class Chip: ObservableObject, Identifiable, Hashable{
+    static func == (lhs: Chip, rhs: Chip) -> Bool {
+        return lhs.id == rhs.id
+    }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
     var color: Color
     let id = UUID().uuidString
     var x, y: Int
@@ -20,10 +27,34 @@ class Chip: ObservableObject, Identifiable{
         y = 0
     }
     
+    init(x: Int, y: Int, color: Color) {
+        self.color = color
+        self.x = x
+        self.y = y
+    }
+    
     init(color: Color) {
         self.color = color
         x = Int.random(in: 0..<750)
         y = Int.random(in: 0..<350)
+    }
+    func getColorString()->String {
+        switch color {
+        case Color("Chip Red"):
+            return "Chip Red"
+        case Color("Chip Blue"):
+            return "Chip Blue"
+        case Color("Chip Green"):
+            return "Chip Green"
+        case Color("Chip Black"):
+            return "Chip Black"
+        case Color("Chip Purple"):
+            return "Chip Purple"
+        case Color("Chip Orange"):
+            return "Chip Orange"
+        default:
+            return "Chip Red"
+        }
     }
 }
 
@@ -237,7 +268,7 @@ class Game: NSObject, ObservableObject {
 //            if isPlayingNow(player: player) {
 //                player.isMyTurn = true
 //            }
-            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: getCurrentPlayer().name, currentBetOnTable: currentBetOnTable, color: player.getColorString(), playerList: players, roundNumber: round)
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, player: player, game: self)
             if (currentPlayerIndex == player.orderIndex) {
                 gameDataToTransfer.gameState = .yourTurn
             }
@@ -254,7 +285,7 @@ class Game: NSObject, ObservableObject {
     }
     func sendGameOverData() {
         for player in players {
-            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .endOfGame, chipsRemaining: player.chipsRemaining, currentBet: player.currentBet, currentPlayer: playersWithChips().first?.name ?? "Player", currentBetOnTable: currentBetOnTable, color: player.getColorString(), playerList: players, roundNumber: round)
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: .endOfGame, player: player, game: self)
             if player.name == playersWithChips().first?.name {
                 gameDataToTransfer.gameState = .playerWon
             }
