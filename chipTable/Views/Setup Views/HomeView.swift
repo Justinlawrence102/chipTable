@@ -36,7 +36,7 @@ struct HomeView: View {
                         })
                         .buttonStyle(.card)
                         NavigationLink(destination: {
-                            TutorialView1(selectedTabView: 0, showingTutorial: $showingTutorialSheet)
+                            TutorialTabView(selectedTabView: 0, showingTutorial: $showingTutorialSheet)
                         }, label:  {
                             buttonView(title: "Learn More", backgroundColor: Color("Card"), titleColor: Color("Light Blue"))
                         })

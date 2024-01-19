@@ -46,7 +46,9 @@ struct FindGameView: View {
             bottomCardView()
         }
         .overlay(alignment: .topTrailing) {
+#if !os(tvOS)
             xButton(dismiss: _dismiss)
+            #endif
         }
         .padding(.all)
         .fullScreenCover(isPresented: $isStartingGame) {

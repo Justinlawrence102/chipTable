@@ -112,11 +112,7 @@ struct PlayerInfoToTransfer: Codable {
         name = player.name
         color = player.getColorString()
         folded = player.folded
-        if player.folded {
-            currentBet = 0
-        }else {
-            currentBet = player.currentBet
-        }
+        currentBet = player.currentBet
         chipsRemaining = player.chipsRemaining
     }
     init(playerList: [Player], requestPlayerList: Bool) {
@@ -261,7 +257,9 @@ class PlayerGame: NSObject, ObservableObject {
         setUpChipsUI()
         do {
             if player.currentBet >= currentBetOnTable || player.folded{
-                currentBetOnTable = player.currentBet
+                if !player.folded {
+                    currentBetOnTable = player.currentBet
+                }
                 var transfer = PlayerInfoToTransfer(player: player)
                 transfer.currentBetOnTable = currentBetOnTable
                 let player = try JSONEncoder().encode(transfer)
@@ -293,7 +291,6 @@ class PlayerGame: NSObject, ObservableObject {
     }
     func fold() {
         player.folded = true
-        player.currentBet = 0
         sendChips()
     }
     
