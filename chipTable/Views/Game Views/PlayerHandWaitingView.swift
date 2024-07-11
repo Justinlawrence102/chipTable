@@ -128,6 +128,9 @@ struct PlayerHandWaitingView: View {
         .sheet(isPresented: $playerGame.gameOver) {
             PlayerWonView()
         }
+        .onAppear(){
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
     }
 }
 #endif

@@ -252,6 +252,11 @@ class PlayerGame: NSObject, ObservableObject {
             player.chipsRemaining = player.chipsRemaining - 1
         }
     }
+    func goAllIn() {
+        player.currentBet = player.currentBet + player.chipsRemaining
+        player.chipsRemaining = 0
+        sendChips()
+    }
     
     func sendChips() {
         setUpChipsUI()

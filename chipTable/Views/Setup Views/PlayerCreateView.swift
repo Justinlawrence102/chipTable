@@ -99,7 +99,7 @@ struct PlayerCreateView: View {
         .overlay(alignment: .topTrailing) {
             xButton(dismiss: _dismiss)
         }
-        .padding(.all)
+        .safeAreaPadding(.all)
         .fullScreenCover(isPresented: $isFindingGame) {
                 FindGameView()
         }

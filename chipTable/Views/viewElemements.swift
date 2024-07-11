@@ -56,7 +56,8 @@ struct PrimaryButtonView: View{
             Text(title)
                 .foregroundColor(Color.white)
                 .font(.body)
-                .frame(width: 350, height: 55)
+                .frame(maxWidth: 350)
+                .frame(height: 55)
                 .background(Color("Light Blue"))
                 .cornerRadius(12)
         }
@@ -88,7 +89,8 @@ struct SecondaryButtonView: View{
             Text(title)
                 .foregroundColor(Color("Light Blue"))
                 .font(.body)
-                .frame(width: 350, height: 55)
+                .frame(maxWidth: 350)
+                .frame(height: 55)
                 .background(Color("Card"))
                 .cornerRadius(12)
         }

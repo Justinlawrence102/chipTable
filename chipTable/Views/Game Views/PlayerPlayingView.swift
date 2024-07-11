@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AudioToolbox
 
 #if os(visionOS)
 struct PlayerPlayingView: View {
@@ -55,6 +56,7 @@ struct PlayerPlayingView: View {
 #else
 struct PlayerPlayingView: View {
     @EnvironmentObject var playerGame: PlayerGame
+    @State var goAllInAlertIsPresented = false
     
     var body: some View {
         ZStack {
@@ -94,6 +96,26 @@ struct PlayerPlayingView: View {
             .padding(.vertical)
         }
         .background(Color("Blue"))
+        .onShake {
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.warning)
+            goAllInAlertIsPresented.toggle()
+        }
+        .alert("Go All In?", isPresented: $goAllInAlertIsPresented){
+            Button(role: .cancel, action: { }, label: {
+                Text("Cancel")
+            })
+            Button(role: .none, action: {
+                playerGame.goAllIn()
+            }, label: {
+                Text("All In!")
+            })
+        }message: {
+            Text("Would you like to bet all of your remaining chips?")
+        }
+        .onAppear(){
+            AudioServicesPlayAlertSoundWithCompletion(SystemSoundID(kSystemSoundID_Vibrate)) {   }
+        }
     }
 }
 #endif

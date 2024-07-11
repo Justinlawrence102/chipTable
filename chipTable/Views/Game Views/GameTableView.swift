@@ -287,6 +287,7 @@ struct GameTableView: View {
                 }
         .onAppear() {
             game.setUpGame()
+            UIApplication.shared.isIdleTimerDisabled = true
         }
     }
 }

@@ -2,22 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>This is required to find nearby players</string>
-	<key>CFBundleDisplayName</key>
-	<string>Chip Table</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_chipTable-serv._tcp</string>
 	</array>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <true/>
-        <key>UISceneConfigurations</key>
-        <dict/>
-    </dict>
 </dict>
 </plist>
