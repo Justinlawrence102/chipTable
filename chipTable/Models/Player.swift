@@ -18,6 +18,9 @@ class Player: NSObject, ObservableObject, Identifiable {
     var folded = false
     @Published var chipsRemaining: Int
     var orderIndex = 0
+    
+    var pointPosition: CGPoint? = nil
+    var sortPosition: Int? = nil
 
     
     var chips = [Chip]()
@@ -28,7 +31,7 @@ class Player: NSObject, ObservableObject, Identifiable {
         name = ""
         peerId = nil
         currentBet = 0
-        chipsRemaining = 1
+        chipsRemaining = 0
         color = Color("Chip Red")
         
         super.init()
@@ -147,7 +150,6 @@ class PlayerGame: NSObject, ObservableObject {
     var gameState: GameState
     
     @Published var isYourTurn = false
-    @Published var gameOver = false
     
     @Published var playersChips = [[Chip]]()
     @Published var rowCounter = 0
@@ -210,8 +212,20 @@ class PlayerGame: NSObject, ObservableObject {
         browsForTables()
         
         setUpChipsUI()
-        players = ["Justin", "mark", "Allison"]
-        currentPlayer = "mark"
+//        players = ["Justin", "mark", "Allison"]
+//        currentPlayer = "mark"
+    }
+    init(gameStatePreviews: GameState) {
+        self.player = Player()
+        gameState = gameStatePreviews
+        myPeerID = MCPeerID(displayName: UIDevice.current.name)
+        
+        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .none)
+        serviceAdvertiser = MCNearbyServiceAdvertiser(peer: myPeerID, discoveryInfo: nil, serviceType: serviceType)
+        serviceBrowser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
+        
+        tablePeerId = myPeerID //this is replaced when you select a table
+        super.init()
     }
     
     func addPlayer(player: Player){
@@ -381,10 +395,8 @@ extension PlayerGame: MCSessionDelegate {
                     self.isYourTurn = false
                 }
                 print("Chips Remaining! \(self.player.chipsRemaining)")
+                print("State? \(self.gameState)")
                 self.setUpChipsUI()
-                if playerData.gameState == .endOfGame || playerData.gameState == .playerWon {
-                    self.gameOver = true
-                }
             }
         }
         catch {

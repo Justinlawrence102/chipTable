@@ -110,13 +110,13 @@ struct ConfigureView: View {
                     .font(Font.system(size: 50, weight: .bold))
                     .foregroundColor(Color("Blue"))
                 Spacer()
-                TextField( "Enter Game Name",text: $game.name)
-                    .padding(.all)
-                    .foregroundColor(Color("Blue"))
-                    .font(Font.system(size: 18))
-                    .frame(width: 400, height: 50)
-                    .background(Color("Card"))
-                    .cornerRadius(12)
+//                TextField( "Enter Game Name",text: $game.name)
+//                    .padding(.all)
+//                    .foregroundColor(Color("Blue"))
+//                    .font(Font.system(size: 18))
+//                    .frame(width: 400, height: 50)
+//                    .background(Color("Card"))
+//                    .cornerRadius(12)
             }
             HStack(spacing: 12.0){
                 VStack {
@@ -126,24 +126,57 @@ struct ConfigureView: View {
                         .foregroundColor(Color("Red"))
                         Spacer()
                     }
-                    List($game.players, editActions: .move) {
-                        $player in
-                        HStack{
-                            Circle()
-                                .foregroundColor(player.color)
-                                .frame(width: 35, height: 35)
-                            Text(player.name)
-                                .font(Font.system(size: 20, weight: .medium))
-                            .foregroundColor(Color("Blue"))
-                            Spacer()
+                    VStack {
+                        ForEach(game.players) {
+                            player in
+                            HStack{
+                                Circle()
+                                    .foregroundColor(player.color)
+                                    .frame(width: 35, height: 35)
+                                Text(player.name)
+                                    .font(Font.system(size: 20, weight: .medium))
+                                .foregroundColor(Color("Blue"))
+                                Spacer()
+                                Button(action: {
+                                    game.startingDealerId = player.id
+                                }, label: {
+                                    if game.startingDealerId == player.id {
+                                        Image(systemName: "menucard.fill")
+                                            .font(.title)
+                                    }else {
+                                        Text("Set Dealer")
+                                    }
+                                })
+                                .foregroundStyle(Color("Light Blue"))
+                            }
+                            Divider()
                         }
-                        .listRowBackground(Color.clear)
+                        Spacer()
                     }
-                    .environment(\.editMode, $editMode)
-                    .frame(maxHeight: .infinity)
+                    .frame(minHeight: 400)
+                    .frame(maxWidth: .infinity)
+                    .padding(.all)
+                    .background(Color("Card"))
                     .cornerRadius(16)
+                    
+                    Spacer()
+//                    List($game.players, editActions: .move) {
+//                        $player in
+//                        HStack{
+//                            Circle()
+//                                .foregroundColor(player.color)
+//                                .frame(width: 35, height: 35)
+//                            Text(player.name)
+//                                .font(Font.system(size: 20, weight: .medium))
+//                            .foregroundColor(Color("Blue"))
+//                            Spacer()
+//                        }
+//                        .listRowBackground(Color.clear)
+//                    }
+//                    .environment(\.editMode, $editMode)
+//                    .frame(maxHeight: .infinity)
+//                    .cornerRadius(16)
                 }
-                .frame(maxWidth: .infinity)
                 Spacer()
                 VStack {
                     HStack {
@@ -188,13 +221,20 @@ struct ConfigureView: View {
                     .background(Color("Card"))
                     .cornerRadius(16)
                     Spacer()
-                    PrimaryButtonView(title: "Confirm and Start", action: {
-                        _ in
-                        print("Confirm and Start")
-                        isStartingGame.toggle()
-                        game.setUpGame()
+                    NavigationLink(destination: {
+                        TablePositionSelectionView()
+                            .environmentObject(game)
+                    }, label:  {
+                        buttonView(title: "Set Order")
                     })
-                    .disabled(game.players.isEmpty)
+                        .disabled(game.players.isEmpty)
+//                    PrimaryButtonView(title: "Set Order", action: {
+//                        _ in
+//                        print("Confirm and Start")
+//                        isStartingGame.toggle()
+////                        game.setUpGame()
+//                    })
+//                    .disabled(game.players.isEmpty)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -205,7 +245,7 @@ struct ConfigureView: View {
             #if os(visionOS)
             GameTableView()
             #else
-            GameTableView(game: game)
+//            GameTableView(game: game)
             #endif
         }
         .padding([.top, .leading, .trailing], 24.0)

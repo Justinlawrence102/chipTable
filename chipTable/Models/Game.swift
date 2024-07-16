@@ -62,7 +62,8 @@ class Game: NSObject, ObservableObject {
     @Published var players: [Player]
     @Published var chips: [Chip]
     @Published var name: String
-    var dealerIndex: Int
+    @Published var dealerIndex: Int
+    @Published var startingDealerId = ""
     @Published var round = 0
     @Published var startConffeti = 0
     var minBet = 2
@@ -70,7 +71,7 @@ class Game: NSObject, ObservableObject {
     var increaseMaxBet = true
     var startingChipCount = ""
     var currentBetOnTable = 0
-    private var currentPlayerIndex: Int
+    @Published var currentPlayerIndex: Int
     private var currentBettingLeaderIndex = 0
     private var roundJustStarted = true //used to set first player
     private var startingPlayerIndex = 0
@@ -88,9 +89,12 @@ class Game: NSObject, ObservableObject {
     public var session: MCSession
     
     
-    override init() {
+    init(withSampleData: Bool = false) {
         
-        players = []//[Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow), Player(name: "Nicole", color: .purple)]
+        players = []
+        if withSampleData {
+            players = [Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow), Player(name: "Nicole", color: .purple)]
+        }
         chips = []
         name = ""
         dealerIndex = 0
@@ -136,10 +140,19 @@ class Game: NSObject, ObservableObject {
         serviceAdvertiser.delegate = self
         serviceAdvertiser.startAdvertisingPeer()
     }
+    
     func setUpGame() {
+        //set dealer to be first and order around table
+        players.sort(by: {$1.sortPosition ?? 0 > $0.sortPosition ?? 0})
+       
+        if let _dealerIndex = players.firstIndex(where: {$0.id == startingDealerId}) {
+            dealerIndex = _dealerIndex - 1 //-1 because the goToNextRound function increments it by one
+        }else {
+            dealerIndex = -1
+        }
         minBet = 2
         round = 0
-        dealerIndex = -1
+        currentPlayerIndex = 0
         var i = 0
         for player in players {
             player.orderIndex = i
@@ -149,6 +162,20 @@ class Game: NSObject, ObservableObject {
         goToNextRound()
     }
     
+    func sendSetTablePotionData() {
+        for i in 0..<players.count {
+            let gameDataToTransfer = PlayerInfoToTransfer(gameState: i == currentPlayerIndex ? .pickTablePosition : .waitingSetup, player: players[i], game: self)
+            do {
+                let data = try JSONEncoder().encode(gameDataToTransfer)
+                if let peerId = players[i].peerId {
+                    try session.send(data, toPeers: [peerId], with: .unreliable)
+                }
+            }
+            catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
     func goToNextRound() {
         round += 1
         currentBetOnTable = 0
@@ -320,16 +347,16 @@ class Game: NSObject, ObservableObject {
 }
 
 enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
-    case waitingSetup, waitingPlayers, yourTurn, yourTurnOver, endOfGame, playerWon
+    case waitingSetup, waitingPlayers, yourTurn, endOfGame, playerWon, pickTablePosition
 
     var description : String {
         switch self {
         case .waitingSetup: return "waitingSetup"
         case .waitingPlayers: return "waitingPlayers"
         case .yourTurn: return "yourTurn"
-        case .yourTurnOver: return "yourTurnOver"
         case .endOfGame: return "endOfGame"
         case .playerWon: return "playerOne"
+        case .pickTablePosition: return "pickTablePosition"
         }
     }
 }
@@ -424,7 +451,7 @@ extension Game: MCNearbyServiceAdvertiserDelegate {
                             print(error.localizedDescription)
                         }
                     }
-                }else {
+                }else if round == 0 {
                     DispatchQueue.main.async {
                         self.players.append(Player(playerToTransfer: playerData, peerId: peerID))
                     }

@@ -92,7 +92,7 @@ struct PlayerPlayingView: View {
                 })
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.horizontal, 40.0)
+            .padding(.horizontal, 16)
             .padding(.vertical)
         }
         .background(Color("Blue"))

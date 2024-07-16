@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AudioToolbox
+
 #if os(visionOS)
 struct PlayerHandWaitingView: View {
     @EnvironmentObject var playerGame: PlayerGame
@@ -63,9 +65,6 @@ struct PlayerHandWaitingView: View {
         .fullScreenCover(isPresented: $playerGame.isYourTurn) {
             PlayerPlayingView()
         }
-        .sheet(isPresented: $playerGame.gameOver) {
-            PlayerWonView()
-        }
     }
 }
 #else
@@ -93,41 +92,35 @@ struct PlayerHandWaitingView: View {
                 }
             }
             
-            VStack(spacing: 8){
-                Text("Current Wager")
-                    .font(.largeTitle.weight(.semibold))
-                    .foregroundColor(Color("Red"))
-                Text(String(playerGame.currentBetOnTable))
-                    .font(.largeTitle.weight(.semibold))
-                    .foregroundColor(Color("Light Red"))
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.all)
-            VStack {
-                Text("Waiting for \(playerGame.currentPlayer)")
-                    .font(.headline)
-                    .foregroundColor(Color("Light Red"))
-                ProgressView()
-            }
-            VStack{
-                Spacer()
-                Text(String(playerGame.player.chipsRemaining))
-                    .font(Font.system(size: 28, weight: .bold))
-                    .foregroundColor(Color("Red"))
-                    .padding()
-                    .frame(width: 90, height: 90)
-                    .background(Color("Card"))
-                    .cornerRadius(12)
+            switch playerGame.gameState {
+            case .waitingSetup:
+                VStack {
+                    Text("Waiting for game to start")
+                        .font(.headline)
+                        .foregroundColor(Color("Light Red"))
+                    ProgressView()
+                        .tint(.white)
+                }
+            case .pickTablePosition:
+                PickTablePositionState()
+            case.waitingPlayers:
+                WaitingForPlayerState()
+            case .endOfGame:
+                PlayerWonView()
+            case .playerWon:
+                PlayerWonView()
+            case .yourTurn:
+                WaitingForPlayerState()
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color("Blue"))
         .fullScreenCover(isPresented: $playerGame.isYourTurn) {
             PlayerPlayingView()
         }
-        .sheet(isPresented: $playerGame.gameOver) {
-            PlayerWonView()
-        }
+//        .sheet(isPresented: $playerGame.gameOver) {
+//            PlayerWonView()
+//        }
         .onAppear(){
             UIApplication.shared.isIdleTimerDisabled = true
         }
@@ -137,7 +130,67 @@ struct PlayerHandWaitingView: View {
 struct PlayerHandWaitingView_Previews: PreviewProvider {
     static var previews: some View {
         PlayerHandWaitingView()
-            .environmentObject(PlayerGame(player: Player()))
+            .environmentObject(PlayerGame(gameStatePreviews: .pickTablePosition))
             .previewLayout(.fixed(width: 300, height: 600))
+    }
+}
+
+struct WaitingForPlayerState: View {
+    @EnvironmentObject var playerGame: PlayerGame
+    var body: some View {
+        VStack(spacing: 8){
+            Text("Current Wager")
+                .font(.largeTitle.weight(.semibold))
+                .foregroundColor(Color("Red"))
+            Text(String(playerGame.currentBetOnTable))
+                .font(.largeTitle.weight(.semibold))
+                .foregroundColor(Color("Light Red"))
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.all)
+        VStack {
+            Text("Waiting for \(playerGame.currentPlayer)")
+                .font(.headline)
+                .foregroundColor(Color("Light Red"))
+            ProgressView()
+                .tint(.white)
+        }
+        VStack{
+            Spacer()
+            Text(String(playerGame.player.chipsRemaining))
+                .font(Font.system(size: 28, weight: .bold))
+                .foregroundColor(Color("Red"))
+                .padding()
+                .frame(width: 90, height: 90)
+                .background(Color("Card"))
+                .cornerRadius(12)
+        }
+    }
+}
+
+struct PickTablePositionState: View {
+    @State private var isAnimating = false
+    var foreverAnimation: Animation {
+        Animation.linear(duration: 4.0)
+            .repeatForever(autoreverses: true)
+    }
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "arrow.up")
+                .font(Font(UIFont.systemFont(ofSize: 80)))
+                .fontWeight(.semibold)
+                .foregroundStyle(Color("Light Blue"))
+                .rotationEffect(Angle(degrees: self.isAnimating ? 30 : -30))
+                .animation(self.foreverAnimation, value: isAnimating)
+            Text("Tap you location around the table")
+                .font(.headline)
+                .foregroundColor(Color("Light Red"))
+        }
+        .onAppear(){
+            isAnimating = true
+            AudioServicesPlayAlertSoundWithCompletion(SystemSoundID(kSystemSoundID_Vibrate)) {   }
+        }
     }
 }

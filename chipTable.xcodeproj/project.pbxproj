@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		98501E9F2C3E1C6A001F432F /* DeviceShakeGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98501E9E2C3E1C6A001F432F /* DeviceShakeGesture.swift */; };
+		98501EA12C408EB2001F432F /* TablePositionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */; };
 		985F95C92B4F2D9200B91D84 /* GameRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985F95C82B4F2D9200B91D84 /* GameRealityView.swift */; };
 		988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988438A52B49B6C400F05777 /* RejoinGameView.swift */; };
 		988438A92B4B991A00F05777 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 988438A82B4B991A00F05777 /* ConfettiSwiftUI */; };
@@ -35,6 +36,7 @@
 
 /* Begin PBXFileReference section */
 		98501E9E2C3E1C6A001F432F /* DeviceShakeGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceShakeGesture.swift; sourceTree = "<group>"; };
+		98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TablePositionSelectionView.swift; sourceTree = "<group>"; };
 		985F95C82B4F2D9200B91D84 /* GameRealityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRealityView.swift; sourceTree = "<group>"; };
 		988438A52B49B6C400F05777 /* RejoinGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejoinGameView.swift; sourceTree = "<group>"; };
 		988438AA2B4C766A00F05777 /* PlayerWonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerWonView.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 			children = (
 				98CD4452296753EB00680CEE /* HomeView.swift */,
 				98CD446129675AE900680CEE /* ConfigureView.swift */,
+				98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */,
 				98CD446829677BF700680CEE /* PlayerCreateView.swift */,
 				98CD44632967776F00680CEE /* FindGameView.swift */,
 				988438A52B49B6C400F05777 /* RejoinGameView.swift */,
@@ -254,6 +257,7 @@
 				98CD4451296753EB00680CEE /* chipTableApp.swift in Sources */,
 				98CB60672B55D6BE00ECB828 /* TutorialView3.swift in Sources */,
 				988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */,
+				98501EA12C408EB2001F432F /* TablePositionSelectionView.swift in Sources */,
 				988438AB2B4C766A00F05777 /* PlayerWonView.swift in Sources */,
 				98CD44642967776F00680CEE /* FindGameView.swift in Sources */,
 				98CD446729677B0B00680CEE /* Player.swift in Sources */,
@@ -424,6 +428,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
@@ -471,6 +476,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";

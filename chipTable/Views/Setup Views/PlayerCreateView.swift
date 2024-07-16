@@ -94,6 +94,7 @@ struct PlayerCreateView: View {
                 isFindingGame.toggle()
             })
                 .disabled(player.name == "")
+                .opacity(player.name == "" ? 0.5 : 1)
 
         }
         .overlay(alignment: .topTrailing) {

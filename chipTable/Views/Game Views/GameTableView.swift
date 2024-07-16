@@ -214,7 +214,7 @@ struct GameTableView: View {
 }
 #else
 struct GameTableView: View {
-    @ObservedObject var game: Game
+    @EnvironmentObject var game: Game
     var body: some View {
         ZStack {
             //game space
@@ -299,7 +299,8 @@ struct TableView_Previews: PreviewProvider {
         GameTableView()
             .environmentObject(PlayerGame(player: Player()))
         #else
-        GameTableView(game: Game())
+        GameTableView()
+            .environmentObject(Game())
             .previewInterfaceOrientation(.landscapeRight)
         #endif
     }
@@ -363,6 +364,7 @@ struct PlayerScoreView: View {
             Text(player.name)
                 .foregroundColor(Color("Blue"))
                 .font(.body.weight(player.isMyTurn ? .bold : .medium))
+            Text("\(player.sortPosition ?? -1)")
             Spacer()
             if player.folded {
                 Text("Fold")
