@@ -215,6 +215,7 @@ struct GameTableView: View {
 #else
 struct GameTableView: View {
     @EnvironmentObject var game: Game
+
     var body: some View {
         ZStack {
             //game space
@@ -300,7 +301,7 @@ struct TableView_Previews: PreviewProvider {
             .environmentObject(PlayerGame(player: Player()))
         #else
         GameTableView()
-            .environmentObject(Game())
+            .environmentObject(Game(withSampleData: true))
             .previewInterfaceOrientation(.landscapeRight)
         #endif
     }
@@ -325,6 +326,9 @@ struct CardSpaceView: View {
             chip in
             ChipView(color: chip.color)
                 .position(x: CGFloat(chip.x), y: CGFloat(chip.y))
+//                .transition(.offset(x: CGFloat(chip.x)-1104, y: 572.5-CGFloat(chip.y)).combined(with: .opacity))
+//                .transition(.push(from: Edg))
+                .transition(.offset(x: chip.xOffset, y: chip.yOffset).combined(with: .opacity))
         }
     }
 }

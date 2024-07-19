@@ -20,6 +20,21 @@ class Chip: ObservableObject, Identifiable, Hashable{
     var color: Color
     let id = UUID().uuidString
     var x, y: Int
+    var startX, startY: CGFloat?
+    var yOffset: CGFloat {
+        let y = ((startY ?? 0.0) - CGFloat(y)*2)//*1.5 //-80
+//        if y < 0 {
+//            return CGFloat(y) - (startY ?? 0.0)
+//        }
+        return y
+    }
+    var xOffset: CGFloat {
+        let x = ((startX ?? 0.0) - CGFloat(x)*2) //*1.5
+//        if x < 0 {
+//            return CGFloat(x) - (startX ?? 0.0)
+//        }
+        return x
+    }
     
     init() {
         color = Color("Red Chip")
@@ -32,11 +47,19 @@ class Chip: ObservableObject, Identifiable, Hashable{
         self.x = x
         self.y = y
     }
-    
     init(color: Color) {
         self.color = color
         x = Int.random(in: 0..<750)
         y = Int.random(in: 0..<350)
+    }
+    
+    init(color: Color, playerPosition: CGPoint) {
+        self.color = color
+        x = Int.random(in: 0..<750)
+        y = Int.random(in: 0..<350)
+        print("(\(x), \(y))")
+        startX = playerPosition.x
+        startY = playerPosition.y
     }
     func getColorString()->String {
         switch color {
@@ -94,6 +117,8 @@ class Game: NSObject, ObservableObject {
         players = []
         if withSampleData {
             players = [Player(name: "Justin", color: .red), Player(name: "Mark", color: .green), Player(name: "Allison", color: .yellow), Player(name: "Nicole", color: .purple)]
+        }else {
+            players = []
         }
         chips = []
         name = ""
@@ -160,6 +185,7 @@ class Game: NSObject, ObservableObject {
             i += 1
         }
         goToNextRound()
+        print("First Player Potition \(players.first?.pointPosition?.x ?? 0) , \(players.first?.pointPosition?.y ?? 0)")
     }
     
     func sendSetTablePotionData() {
@@ -225,13 +251,13 @@ class Game: NSObject, ObservableObject {
             if players[i].chipsRemaining > 0 {
                 if !gaveSmallBlind {
                     players[i].currentBet = minBet/2
-                    addChipsToTable(count: minBet/2, color: players[i].color)
+                    addChipsToTable(count: minBet/2, color: players[i].color, playerPosition: players[i].pointPosition)
                     players[i].chipsRemaining -= players[i].currentBet
                     gaveSmallBlind = true
                 }else if !gaveLargeBlind{
                     players[i].currentBet = minBet
                     currentBetOnTable = minBet
-                    addChipsToTable(count: minBet, color: players[i].color)
+                    addChipsToTable(count: minBet, color: players[i].color, playerPosition: players[i].pointPosition)
                     currentBettingLeaderIndex = i
 //                    currentPlayerIndex = i + 1
                     players[i].chipsRemaining -= players[i].currentBet
@@ -284,9 +310,12 @@ class Game: NSObject, ObservableObject {
         }
         sendData()
     }
-    func addChipsToTable(count: Int, color: Color) {
-        for _ in 0..<count {
-            chips.append(Chip(color: color))
+    func addChipsToTable(count: Int, color: Color, playerPosition: CGPoint?) {
+        withAnimation {
+            for _ in 0..<count {
+                print("Player Position: \(self.players[self.currentPlayerIndex].pointPosition ?? CGPoint())")
+                chips.append(Chip(color: color, playerPosition: playerPosition ?? CGPoint()))
+            }
         }
     }
     func sendData() {
@@ -395,7 +424,7 @@ extension Game: MCSessionDelegate {
                     if playerData.folded ?? false {
                         newChipsAdded = 0
                     }
-                    self.addChipsToTable(count: newChipsAdded, color: self.players[self.currentPlayerIndex].color)
+                    self.addChipsToTable(count: newChipsAdded, color: self.players[self.currentPlayerIndex].color, playerPosition: self.players[self.currentPlayerIndex].pointPosition)
                     
                     self.players[self.currentPlayerIndex].updateFromTransfer(transfer: playerData)
                     self.currentBetOnTable = playerData.currentBetOnTable ?? 0
