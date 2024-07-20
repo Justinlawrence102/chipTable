@@ -111,6 +111,8 @@ struct PlayerHandWaitingView: View {
                 PlayerWonView()
             case .yourTurn:
                 WaitingForPlayerState()
+            case .endOfRoundSummary:
+                EndOfRoundSummaryState()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -130,7 +132,7 @@ struct PlayerHandWaitingView: View {
 struct PlayerHandWaitingView_Previews: PreviewProvider {
     static var previews: some View {
         PlayerHandWaitingView()
-            .environmentObject(PlayerGame(gameStatePreviews: .pickTablePosition))
+            .environmentObject(PlayerGame(gameStatePreviews: .endOfRoundSummary))
             .previewLayout(.fixed(width: 300, height: 600))
     }
 }
@@ -191,6 +193,48 @@ struct PickTablePositionState: View {
         .onAppear(){
             isAnimating = true
             AudioServicesPlayAlertSoundWithCompletion(SystemSoundID(kSystemSoundID_Vibrate)) {   }
+        }
+    }
+}
+
+struct EndOfRoundSummaryState: View {
+    @EnvironmentObject var playerGame: PlayerGame
+    var body: some View {
+        VStack {
+            Text("End of Round")
+                .font(.largeTitle.weight(.semibold))
+                .foregroundColor(Color("Red"))
+            Text(String(playerGame.roundNumber ?? 0))
+                .font(.largeTitle.weight(.semibold))
+                .foregroundColor(Color("Light Red"))
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Player")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Color("Blue"))
+                    Spacer()
+                    Text("Chips Remaining")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Color("Blue"))
+                }
+                ForEach(playerGame.players ?? [], id: \.self) {
+                    playerName in
+                    HStack {
+                        Text(playerName)
+                            .foregroundStyle(Color("Blue"))
+                        Spacer()
+                        Text("\(playerGame.getChipsRemainingForPlayer(player: playerName))")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(Color("Red"))
+                    }
+                    .opacity(playerGame.getChipsRemainingForPlayer(player: playerName) == 0 ? 0.4 : 1)
+                }
+            }
+            .padding()
+            .background(Color("Card"))
+            .cornerRadius(12)
+            .padding()
+            Spacer()
         }
     }
 }

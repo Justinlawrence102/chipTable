@@ -98,7 +98,8 @@ struct PlayerInfoToTransfer: Codable {
     
     var requestPlayerList: Bool?
     var playerList: [String]?
-    var playerChipList: [Int]?
+    var playerChipsWageredList: [Int]?
+    var playerChipsRemainingList: [Int]?
     var chipsOnTable: [String]?
     var overridePlayer: Bool? //when this is true, the peerID of the sender will replace what is saved for the player name
     init() {
@@ -132,7 +133,8 @@ struct PlayerInfoToTransfer: Codable {
         self.color = player.getColorString()
         self.playerList = game.players.map({$0.name})
         self.roundNumber = game.round
-        self.playerChipList = game.players.map({$0.currentBet})
+        self.playerChipsWageredList = game.players.map({$0.currentBet})
+        self.playerChipsRemainingList = game.players.map({$0.chipsRemaining})
         self.chipsOnTable = game.chips.map({"\($0.x),\($0.y),\($0.getColorString())"})
     }
     
@@ -156,7 +158,8 @@ class PlayerGame: NSObject, ObservableObject {
     
     //list of players for when we disconnect or for visionOS
     @Published var players: [String]?
-    var playerChipList: [Int]?
+    var playerChipsWageredList: [Int]?
+    var playerChipsRemainingList: [Int]?
     @Published var roundNumber: Int?
     var chipsOnTable: [String]?
     var chipsOnTableDecoded: [Chip] {
@@ -234,11 +237,19 @@ class PlayerGame: NSObject, ObservableObject {
     
     func getChipsForPlayer(player: String) ->String {
         if let index = players?.lastIndex(where: {$0 == player}) {
-            if (playerChipList ?? []).indices.contains(index) {
-                return String((playerChipList  ?? [])[index])
+            if (playerChipsWageredList ?? []).indices.contains(index) {
+                return String((playerChipsWageredList  ?? [])[index])
             }
         }
-        return ""
+        return "0"
+    }
+    func getChipsRemainingForPlayer(player: String) -> Int {
+        if let index = players?.lastIndex(where: {$0 == player}) {
+            if (playerChipsRemainingList ?? []).indices.contains(index) {
+                return (playerChipsRemainingList  ?? [])[index]
+            }
+        }
+        return 0
     }
     
     deinit {
@@ -386,7 +397,8 @@ extension PlayerGame: MCSessionDelegate {
                 self.currentPlayer = playerData.currentPlaterName ?? ""
                 self.currentBetOnTable = playerData.currentBetOnTable ?? 0
                 self.players = playerData.playerList
-                self.playerChipList = playerData.playerChipList
+                self.playerChipsWageredList = playerData.playerChipsWageredList
+                self.playerChipsRemainingList = playerData.playerChipsRemainingList
                 self.roundNumber = playerData.roundNumber
                 self.chipsOnTable = playerData.chipsOnTable
                 if self.gameState == .yourTurn {

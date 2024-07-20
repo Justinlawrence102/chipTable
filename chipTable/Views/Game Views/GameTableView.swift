@@ -284,8 +284,9 @@ struct GameTableView: View {
         .confettiCannon(counter: $game.startConffeti, num: 120, colors: [Color("Light Blue"), Color("Red"), Color("Card")],rainHeight: 200, openingAngle: Angle.degrees(0), closingAngle: Angle.degrees(360), radius: 550, repetitions: 1, repetitionInterval: 0.8)
         .background(Color("Blue"))
         .sheet(isPresented: $game.showingWinnerSelectModal) {
-                    SelectWinnerView(game: game)
-                }
+            SelectWinnerView(game: game)
+                .interactiveDismissDisabled()
+        }
         .onAppear() {
             game.setUpGame()
             UIApplication.shared.isIdleTimerDisabled = true
@@ -368,7 +369,6 @@ struct PlayerScoreView: View {
             Text(player.name)
                 .foregroundColor(Color("Blue"))
                 .font(.body.weight(player.isMyTurn ? .bold : .medium))
-            Text("\(player.sortPosition ?? -1)")
             Spacer()
             if player.folded {
                 Text("Fold")
@@ -384,5 +384,6 @@ struct PlayerScoreView: View {
                 .font(.body.weight(.bold))
                 .frame(width: 35)
         }
+        .opacity(player.chipsRemaining == 0 ? 0.4 : 1)
     }
 }

@@ -318,6 +318,21 @@ class Game: NSObject, ObservableObject {
             }
         }
     }
+    func sendNewGameState(state: GameState) {
+        for player in players {
+            var gameDataToTransfer = PlayerInfoToTransfer(gameState: state, player: player, game: self)
+            do {
+                let data = try JSONEncoder().encode(gameDataToTransfer)
+                if let peerId = player.peerId {
+                    try session.send(data, toPeers: [peerId], with: .unreliable)
+                }
+            }
+            catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func sendData() {
         for player in players {
             player.isMyTurn = isPlayingNow(player: player)
@@ -376,7 +391,7 @@ class Game: NSObject, ObservableObject {
 }
 
 enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
-    case waitingSetup, waitingPlayers, yourTurn, endOfGame, playerWon, pickTablePosition
+    case waitingSetup, waitingPlayers, yourTurn, endOfGame, playerWon, pickTablePosition, endOfRoundSummary
 
     var description : String {
         switch self {
@@ -386,6 +401,7 @@ enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
         case .endOfGame: return "endOfGame"
         case .playerWon: return "playerOne"
         case .pickTablePosition: return "pickTablePosition"
+        case .endOfRoundSummary: return "endOfRoundSummary"
         }
     }
 }

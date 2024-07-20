@@ -94,6 +94,9 @@ struct RoundSummaryView: View {
                 game.showingWinnerSelectModal = false
             })
         }
+        .onAppear{
+            game.sendNewGameState(state: .endOfRoundSummary)
+        }
         .padding([.leading, .bottom, .trailing])
         .padding(.top, -25)
     }
