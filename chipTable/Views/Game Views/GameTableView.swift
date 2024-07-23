@@ -323,12 +323,25 @@ struct CardSpaceView: View {
 struct CardSpaceView: View {
     @ObservedObject var game: Game
     var body: some View {
-        ForEach(game.chips) {
+        HStack {
+            ForEach(game.chipGroups) {
+                chipGroup in
+                ZStack {
+                    CardSpaceGroupView(chipGroups: chipGroup)
+                }
+                .frame(width: 700/CGFloat(game.chipGroups.count), height: 300)
+            }
+        }
+    }
+}
+
+struct CardSpaceGroupView: View {
+    @ObservedObject var chipGroups: ChipGroup
+    var body: some View {
+        ForEach(chipGroups.chips) {
             chip in
-            ChipView(color: chip.color)
+            ChipView(color: chip.player.color)
                 .position(x: CGFloat(chip.x), y: CGFloat(chip.y))
-//                .transition(.offset(x: CGFloat(chip.x)-1104, y: 572.5-CGFloat(chip.y)).combined(with: .opacity))
-//                .transition(.push(from: Edg))
                 .transition(.offset(x: chip.xOffset, y: chip.yOffset).combined(with: .opacity))
         }
     }

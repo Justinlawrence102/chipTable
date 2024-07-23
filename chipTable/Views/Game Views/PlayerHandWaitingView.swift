@@ -82,7 +82,7 @@ struct PlayerHandWaitingView: View {
                         {
                             ForEach(playerGame.playersChips[i]) {
                                 chip in
-                                ChipView(color: chip.color)
+                                ChipView(color: chip.player.color)
                             }
                             Spacer()
                         }

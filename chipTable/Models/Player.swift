@@ -135,7 +135,10 @@ struct PlayerInfoToTransfer: Codable {
         self.roundNumber = game.round
         self.playerChipsWageredList = game.players.map({$0.currentBet})
         self.playerChipsRemainingList = game.players.map({$0.chipsRemaining})
-        self.chipsOnTable = game.chips.map({"\($0.x),\($0.y),\($0.getColorString())"})
+        self.chipsOnTable = game.chipGroups.first?.chips.map({"\($0.x),\($0.y),\($0.getColorString())"})
+        if gameState == .endOfGame {
+            self.currentPlaterName = game.playersWithChips().first?.name
+        }
     }
     
     func getColor()->Color {
@@ -168,7 +171,7 @@ class PlayerGame: NSObject, ObservableObject {
             let comp = chip.components(separatedBy: ",")
             if comp.indices.contains(2) {
 //                let test = Color(comp[2])
-                chipList.append(Chip(x: Int(comp[0]) ?? 0, y: Int(comp[1]) ?? 0, color: Color(comp[2])))
+                chipList.append(Chip(x: Int(comp[0]) ?? 0, y: Int(comp[1]) ?? 0, player: Player(name: "", color: Color(comp[2]))))
             }
         }
         return chipList
@@ -258,6 +261,9 @@ class PlayerGame: NSObject, ObservableObject {
 
     func matchBet() {
         if player.chipsRemaining + (player.currentBet - currentBetOnTable) < 0 {
+            //going all in
+            player.currentBet = player.currentBet + player.chipsRemaining
+            player.chipsRemaining = 0
             return
         }
         if player.currentBet < currentBetOnTable {
@@ -286,7 +292,7 @@ class PlayerGame: NSObject, ObservableObject {
     func sendChips() {
         setUpChipsUI()
         do {
-            if player.currentBet >= currentBetOnTable || player.folded{
+            if player.currentBet >= currentBetOnTable || player.folded || (player.currentBet < currentBetOnTable && player.chipsRemaining == 0){
                 if !player.folded {
                     currentBetOnTable = player.currentBet
                 }
@@ -306,10 +312,10 @@ class PlayerGame: NSObject, ObservableObject {
         rowCounter = -1
         for i in 0..<player.chipsRemaining {
             if i%10 == 0 {
-                playersChips.append([Chip(color: player.color)])
+                playersChips.append([Chip(player: player)])
                 rowCounter += 1
             }else {
-                playersChips[rowCounter].append(Chip(color: player.color))
+                playersChips[rowCounter].append(Chip(player: player))
             }
         }
     }

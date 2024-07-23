@@ -10,6 +10,8 @@ import SwiftUI
 struct SelectWinnerView: View {
     @ObservedObject var game: Game
     @State private var isShowingWinner = false
+    @State private var isSelectingNextWinner = false
+    @State var chipGroupIndex = 0
     var body: some View {
         NavigationStack {
             ZStack {
@@ -22,14 +24,27 @@ struct SelectWinnerView: View {
                         PrimaryButtonView(title: player.name, action: {
                             _ in
                             print("Select winner!")
-                            game.selectWinner(player: player)
-                            isShowingWinner.toggle()
+                            game.selectWinner(player: player, chipGroup: chipGroupIndex)
+                            if chipGroupIndex+1 >= game.chipGroups.count {
+                                isShowingWinner.toggle()
+                            }else {
+                                chipGroupIndex += 1
+                                isSelectingNextWinner.toggle()
+                                
+                            }
                         })
+                        .disabled(game.chipGroups.indices.contains(chipGroupIndex) ? !game.chipGroups[chipGroupIndex].avaiablePlayers.contains(player) : false)
+                        .opacity(game.chipGroups.indices.contains(chipGroupIndex) ? (game.chipGroups[chipGroupIndex].avaiablePlayers.contains(player) ? 1 : 0.4) : 1)
                     }
                     Spacer()
                 }
                 .padding(.all)
-                NavigationLink(destination: RoundSummaryView(game: game), isActive: $isShowingWinner) {EmptyView()}
+                .navigationDestination(isPresented: $isShowingWinner, destination: {
+                    RoundSummaryView(game: game)
+                })
+                .navigationDestination(isPresented: $isSelectingNextWinner, destination: {
+                    SelectWinnerView(game: game, chipGroupIndex: chipGroupIndex)
+                })
             }
         }
     }

@@ -17,8 +17,8 @@ class Chip: ObservableObject, Identifiable, Hashable{
         hasher.combine(id)
     }
     
-    var color: Color
     let id = UUID().uuidString
+    let player: Player
     var x, y: Int
     var startX, startY: CGFloat?
     var yOffset: CGFloat {
@@ -37,32 +37,31 @@ class Chip: ObservableObject, Identifiable, Hashable{
     }
     
     init() {
-        color = Color("Red Chip")
         x = 0
         y = 0
+        player = Player()
     }
     
-    init(x: Int, y: Int, color: Color) {
-        self.color = color
+    init(x: Int, y: Int, player: Player) {
         self.x = x
         self.y = y
+        self.player = player
     }
-    init(color: Color) {
-        self.color = color
+    init(player: Player) {
         x = Int.random(in: 0..<750)
         y = Int.random(in: 0..<350)
+        self.player = player
     }
     
-    init(color: Color, playerPosition: CGPoint) {
-        self.color = color
-        x = Int.random(in: 0..<750)
-        y = Int.random(in: 0..<350)
-        print("(\(x), \(y))")
+    init(player: Player, playerPosition: CGPoint, numChipGroups: Int) {
+        self.player = player
+        x = Int.random(in: 0..<(750/numChipGroups))
+        y = Int.random(in: 0..<(350))
         startX = playerPosition.x
         startY = playerPosition.y
     }
     func getColorString()->String {
-        switch color {
+        switch player.color {
         case Color("Chip Red"):
             return "Chip Red"
         case Color("Chip Blue"):
@@ -83,7 +82,8 @@ class Chip: ObservableObject, Identifiable, Hashable{
 
 class Game: NSObject, ObservableObject {
     @Published var players: [Player]
-    @Published var chips: [Chip]
+//    @Published var chips: [Chip]
+    @Published var chipGroups: [ChipGroup]
     @Published var name: String
     @Published var dealerIndex: Int
     @Published var startingDealerId = ""
@@ -120,7 +120,7 @@ class Game: NSObject, ObservableObject {
         }else {
             players = []
         }
-        chips = []
+        chipGroups = []
         name = ""
         dealerIndex = 0
         currentPlayerIndex = 0
@@ -152,12 +152,12 @@ class Game: NSObject, ObservableObject {
         return player.orderIndex == dealerIndex
     }
     
-    func selectWinner(player: Player) {
+    func selectWinner(player: Player, chipGroup: Int) {
         var totalChipsOnTable = 0
-        for player in players {
-            totalChipsOnTable += player.currentBet
-        }
-        players[player.orderIndex].chipsRemaining += totalChipsOnTable
+//        for player in players {
+//            totalChipsOnTable += player.currentBet
+//        }
+        players[player.orderIndex].chipsRemaining += chipGroups[chipGroup].chips.count
     }
     
     func advertiseTableToPlayers() {
@@ -185,7 +185,6 @@ class Game: NSObject, ObservableObject {
             i += 1
         }
         goToNextRound()
-        print("First Player Potition \(players.first?.pointPosition?.x ?? 0) , \(players.first?.pointPosition?.y ?? 0)")
     }
     
     func sendSetTablePotionData() {
@@ -205,8 +204,8 @@ class Game: NSObject, ObservableObject {
     func goToNextRound() {
         round += 1
         currentBetOnTable = 0
-        chips = []
-        
+        chipGroups = [ChipGroup(chips: [], currentWager: currentBetOnTable)]
+
         if playersWithChips().count <= 1 {
             print("\(playersWithChips().first?.name ?? "Player") won!")
             startConffeti += 1
@@ -251,13 +250,13 @@ class Game: NSObject, ObservableObject {
             if players[i].chipsRemaining > 0 {
                 if !gaveSmallBlind {
                     players[i].currentBet = minBet/2
-                    addChipsToTable(count: minBet/2, color: players[i].color, playerPosition: players[i].pointPosition)
+                    addChipsToTable(count: minBet/2, player: players[i])
                     players[i].chipsRemaining -= players[i].currentBet
                     gaveSmallBlind = true
                 }else if !gaveLargeBlind{
                     players[i].currentBet = minBet
                     currentBetOnTable = minBet
-                    addChipsToTable(count: minBet, color: players[i].color, playerPosition: players[i].pointPosition)
+                    addChipsToTable(count: minBet, player: players[i])
                     currentBettingLeaderIndex = i
 //                    currentPlayerIndex = i + 1
                     players[i].chipsRemaining -= players[i].currentBet
@@ -310,13 +309,62 @@ class Game: NSObject, ObservableObject {
         }
         sendData()
     }
-    func addChipsToTable(count: Int, color: Color, playerPosition: CGPoint?) {
+    func addChipsToTable(count: Int, player: Player) {
         withAnimation {
-            for _ in 0..<count {
-                print("Player Position: \(self.players[self.currentPlayerIndex].pointPosition ?? CGPoint())")
-                chips.append(Chip(color: color, playerPosition: playerPosition ?? CGPoint()))
+            let currentBiggestGroup = chipGroups.last!
+            print("Current Bet: \(getCurrentPlayer().currentBet), current wager on group: \(currentBiggestGroup.currentWager)")
+            if getCurrentPlayer().currentBet < currentBiggestGroup.currentWager && count != 0 {
+                print("This bet doesn't fit into this pot...make a new one!!!")
+
+//                print("Max Chips per player going into this pot: \(count)")
+                //the player is putting less than what's on the table. Reshuffle chip groups
+                let newPot = ChipGroup(chips: [], currentWager: currentBetOnTable)
+                let existingPot = ChipGroup(chips: [], currentWager: currentBetOnTable)
+
+                let numChipsWageredByCurrentPlayer = currentBiggestGroup.numChipsFromPlayer(player: player) + count
+                
+                for player in players {
+                    let numChipsInExisitingPot = currentBiggestGroup.numChipsFromPlayer(player: player)
+                    if numChipsInExisitingPot > numChipsWageredByCurrentPlayer {
+                        print("\(player.name) needs to put \(numChipsWageredByCurrentPlayer) in existing pot and \(numChipsInExisitingPot-numChipsWageredByCurrentPlayer) into the new pot")
+                        for _ in 0..<numChipsWageredByCurrentPlayer {
+                            existingPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
+                        }
+                        for _ in 0..<(numChipsInExisitingPot-numChipsWageredByCurrentPlayer) {
+                            newPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
+                        }
+                        
+                    }else if player.isMyTurn {
+                        //numChipsInExisitingPot
+                        print("\(player.name) needs to put \(numChipsWageredByCurrentPlayer) into existing pot")
+                        for _ in 0..<numChipsWageredByCurrentPlayer {
+                            existingPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
+                        }
+                    }else {
+                        print("\(player.name) needs to put \(numChipsInExisitingPot) into existing pot")
+                        for _ in 0..<numChipsInExisitingPot {
+                            existingPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
+                        }
+                    }
+                }
+                chipGroups.last?.chips = existingPot.chips
+                newPot.currentWager = currentBetOnTable
+                chipGroups.append(newPot)
+            }else {
+                //currentWager
+                for _ in 0..<count {
+                    chipGroups.last?.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count))
+                    chipGroups.last?.currentWager = currentBetOnTable
+                }
             }
         }
+    }
+    
+    func adChipsToGroup(chipsRemaining: Int) {
+        if chipsRemaining == 0 {
+            return //base case
+        }
+        
     }
     func sendNewGameState(state: GameState) {
         for player in players {
@@ -440,10 +488,15 @@ extension Game: MCSessionDelegate {
                     if playerData.folded ?? false {
                         newChipsAdded = 0
                     }
-                    self.addChipsToTable(count: newChipsAdded, color: self.players[self.currentPlayerIndex].color, playerPosition: self.players[self.currentPlayerIndex].pointPosition)
-                    
                     self.players[self.currentPlayerIndex].updateFromTransfer(transfer: playerData)
-                    self.currentBetOnTable = playerData.currentBetOnTable ?? 0
+                    
+//                  only set the current bet on table if its going to be larger...not if someone needs to split the pot
+                    if playerData.currentBetOnTable ?? 0 > self.currentBetOnTable {
+                        self.currentBetOnTable = playerData.currentBetOnTable ?? 0
+                    }
+                    
+                    self.addChipsToTable(count: newChipsAdded, player: self.players[self.currentPlayerIndex])
+
                     if self.currentBetOnTable > previousHighestBet {
                         self.currentBettingLeaderIndex = self.currentPlayerIndex
                     }
@@ -508,5 +561,23 @@ extension Game: MCNearbyServiceAdvertiserDelegate {
         }
         print("didReceiveInvitationFromPeer \(peerID)")
         invitationHandler(true, session)
+    }
+}
+
+class ChipGroup: ObservableObject, Identifiable{
+    let id = UUID()
+    var avaiablePlayers: [Player] {
+        return Array(Set(chips.map({$0.player})))
+    }
+    var currentWager: Int
+    @Published var chips: [Chip]
+    
+    init(chips: [Chip], currentWager: Int) {
+        self.chips = chips
+        self.currentWager = currentWager
+    }
+    
+    func numChipsFromPlayer(player: Player) -> Int {
+        return chips.filter({$0.player.id == player.id}).count
     }
 }
