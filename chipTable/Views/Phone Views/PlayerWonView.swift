@@ -16,7 +16,7 @@ struct PlayerWonView: View {
         VStack {
             Text("Game Over")
                 .font(.title.weight(.semibold))
-                .foregroundStyle(Color("Blue"))
+                .foregroundStyle(Color("Text"))
             Spacer()
             Text(playerGame.gameState == .playerWon ? "You Won!" : "\(playerGame.currentPlayer) Won!")
                 .font(.title3.weight(.semibold))

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		98501E9F2C3E1C6A001F432F /* DeviceShakeGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98501E9E2C3E1C6A001F432F /* DeviceShakeGesture.swift */; };
 		98501EA12C408EB2001F432F /* TablePositionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */; };
+		9856D6AD2C51B37000650162 /* ManageGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9856D6AC2C51B37000650162 /* ManageGameView.swift */; };
 		985F95C92B4F2D9200B91D84 /* GameRealityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985F95C82B4F2D9200B91D84 /* GameRealityView.swift */; };
 		988438A62B49B6C400F05777 /* RejoinGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988438A52B49B6C400F05777 /* RejoinGameView.swift */; };
 		988438A92B4B991A00F05777 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 988438A82B4B991A00F05777 /* ConfettiSwiftUI */; };
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		98501E9E2C3E1C6A001F432F /* DeviceShakeGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceShakeGesture.swift; sourceTree = "<group>"; };
 		98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TablePositionSelectionView.swift; sourceTree = "<group>"; };
+		9856D6AC2C51B37000650162 /* ManageGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageGameView.swift; sourceTree = "<group>"; };
 		985F95C82B4F2D9200B91D84 /* GameRealityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRealityView.swift; sourceTree = "<group>"; };
 		988438A52B49B6C400F05777 /* RejoinGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejoinGameView.swift; sourceTree = "<group>"; };
 		988438AA2B4C766A00F05777 /* PlayerWonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerWonView.swift; sourceTree = "<group>"; };
@@ -76,6 +78,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9856D6AE2C51B37900650162 /* Phone Views */ = {
+			isa = PBXGroup;
+			children = (
+				988DADFA296873B30084C50C /* PlayerHandWaitingView.swift */,
+				988438AA2B4C766A00F05777 /* PlayerWonView.swift */,
+				988DADFC29687C930084C50C /* PlayerPlayingView.swift */,
+			);
+			path = "Phone Views";
+			sourceTree = "<group>";
+		};
 		98B8B2592B4C7C2C009AD645 /* Tutorial */ = {
 			isa = PBXGroup;
 			children = (
@@ -138,7 +150,8 @@
 		98CD446B29685C2F00680CEE /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				98CD446D29685C5400680CEE /* Game Views */,
+				9856D6AE2C51B37900650162 /* Phone Views */,
+				98CD446D29685C5400680CEE /* Table Views */,
 				98CD446C29685C3600680CEE /* Setup Views */,
 				98CC58AD29685D8E00D73B01 /* viewElemements.swift */,
 				98B8B2592B4C7C2C009AD645 /* Tutorial */,
@@ -159,18 +172,16 @@
 			path = "Setup Views";
 			sourceTree = "<group>";
 		};
-		98CD446D29685C5400680CEE /* Game Views */ = {
+		98CD446D29685C5400680CEE /* Table Views */ = {
 			isa = PBXGroup;
 			children = (
 				98CD446E29685C6700680CEE /* GameTableView.swift */,
-				988DADFA296873B30084C50C /* PlayerHandWaitingView.swift */,
-				988438AA2B4C766A00F05777 /* PlayerWonView.swift */,
-				988DADFC29687C930084C50C /* PlayerPlayingView.swift */,
+				9856D6AC2C51B37000650162 /* ManageGameView.swift */,
 				98AA5F482969E14500D3BE7C /* SelectWinnerView.swift */,
 				98AA5F4A2969E4AB00D3BE7C /* RoundSummaryView.swift */,
 				985F95C82B4F2D9200B91D84 /* GameRealityView.swift */,
 			);
-			path = "Game Views";
+			path = "Table Views";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,6 +273,7 @@
 				98CD44642967776F00680CEE /* FindGameView.swift in Sources */,
 				98CD446729677B0B00680CEE /* Player.swift in Sources */,
 				98CB60652B55D66E00ECB828 /* TutorialView2.swift in Sources */,
+				9856D6AD2C51B37000650162 /* ManageGameView.swift in Sources */,
 				98CD446F29685C6700680CEE /* GameTableView.swift in Sources */,
 				985F95C92B4F2D9200B91D84 /* GameRealityView.swift in Sources */,
 				98CC58AE29685D8E00D73B01 /* viewElemements.swift in Sources */,

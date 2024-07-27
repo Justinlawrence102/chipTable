@@ -81,6 +81,24 @@ class Player: NSObject, ObservableObject, Identifiable {
             return "Chip Red"
         }
     }
+    func getColorString(color: Color)->String {
+        switch color {
+        case Color("Chip Red"):
+            return "Chip Red"
+        case Color("Chip Blue"):
+            return "Chip Blue"
+        case Color("Chip Green"):
+            return "Chip Green"
+        case Color("Chip Black"):
+            return "Chip Black"
+        case Color("Chip Purple"):
+            return "Chip Purple"
+        case Color("Chip Orange"):
+            return "Chip Orange"
+        default:
+            return "Chip Red"
+        }
+    }
     
     func getColorOptions() -> [Color] {
         return [Color("Chip Red"), Color("Chip Blue"), Color("Chip Green"), Color("Chip Black"), Color("Chip Orange"), Color("Chip Purple")]

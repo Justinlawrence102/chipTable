@@ -135,7 +135,7 @@ struct ConfigureView: View {
                                     .frame(width: 35, height: 35)
                                 Text(player.name)
                                     .font(Font.system(size: 20, weight: .medium))
-                                .foregroundColor(Color("Blue"))
+                                .foregroundColor(Color("Text"))
                                 Spacer()
                                 Button(action: {
                                     game.startingDealerId = player.id
@@ -156,7 +156,7 @@ struct ConfigureView: View {
                     .frame(minHeight: 400)
                     .frame(maxWidth: .infinity)
                     .padding(.all)
-                    .background(Color("Card"))
+                    .background(Color(UIColor.systemGray6))
                     .cornerRadius(16)
                     
                     Spacer()
@@ -189,7 +189,7 @@ struct ConfigureView: View {
                         HStack{
                             Text("Starting Chip Count")
                                 .font(Font.system(size: 20, weight: .medium))
-                            .foregroundColor(Color("Blue"))
+                            .foregroundColor(Color("Text"))
                             Spacer()
                             TextField( "0",text: $game.startingChipCount)
                                 .padding(.all)
@@ -203,7 +203,7 @@ struct ConfigureView: View {
                         HStack{
                             Text("Require big and little blind")
                                 .font(Font.system(size: 20, weight: .medium))
-                            .foregroundColor(Color("Blue"))
+                            .foregroundColor(Color("Text"))
                             Spacer()
                             Toggle("", isOn: $game.requireBigLittle)
                                 .toggleStyle(SwitchToggleStyle(tint: Color("Light Blue")))
@@ -211,14 +211,14 @@ struct ConfigureView: View {
                         HStack{
                             Text("Increase blinds once someone gets out")
                                 .font(Font.system(size: 20, weight: .medium))
-                            .foregroundColor(Color("Blue"))
+                            .foregroundColor(Color("Text"))
                             Spacer()
                             Toggle("", isOn: $game.increaseMaxBet)
                                 .toggleStyle(SwitchToggleStyle(tint: Color("Light Blue")))
                         }
                     }
                     .padding(.all)
-                    .background(Color("Card"))
+                    .background(Color(UIColor.systemGray6))
                     .cornerRadius(16)
                     Spacer()
                     NavigationLink(destination: {

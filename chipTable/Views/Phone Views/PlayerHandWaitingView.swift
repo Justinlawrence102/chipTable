@@ -210,13 +210,11 @@ struct EndOfRoundSummaryState: View {
             VStack(spacing: 8) {
                 HStack {
                     Text("Player")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color("Blue"))
                     Spacer()
                     Text("Chips Remaining")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(Color("Blue"))
                 }
+                .fontWeight(.semibold)
+                .foregroundStyle(Color("Blue"))
                 ForEach(playerGame.players ?? [], id: \.self) {
                     playerName in
                     HStack {

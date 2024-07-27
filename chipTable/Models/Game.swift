@@ -153,7 +153,7 @@ class Game: NSObject, ObservableObject {
     }
     
     func selectWinner(player: Player, chipGroup: Int) {
-        var totalChipsOnTable = 0
+//        var totalChipsOnTable = 0
 //        for player in players {
 //            totalChipsOnTable += player.currentBet
 //        }

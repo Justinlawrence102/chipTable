@@ -215,7 +215,8 @@ struct GameTableView: View {
 #else
 struct GameTableView: View {
     @EnvironmentObject var game: Game
-
+    @State var showingConfigureView = false
+    
     var body: some View {
         ZStack {
             //game space
@@ -269,9 +270,10 @@ struct GameTableView: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        game.sendData()
+                        showingConfigureView.toggle()
                     }) {
-                        Image(systemName: "arrow.clockwise")
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 30))
                             .frame(width: 60, height: 60)
                             .foregroundColor(Color("Card"))
                             .background(Color("Light Blue"))
@@ -287,6 +289,9 @@ struct GameTableView: View {
             SelectWinnerView(game: game)
                 .interactiveDismissDisabled()
         }
+        .sheet(isPresented: $showingConfigureView, content: {
+            ManageGameView()
+        })
         .onAppear() {
             game.setUpGame()
             UIApplication.shared.isIdleTimerDisabled = true

@@ -18,7 +18,7 @@ struct SelectWinnerView: View {
                 VStack(spacing: 12.0) {
                     Text("Select Winner")
                         .font(Font.system(size: 30, weight: .semibold))
-                        .foregroundColor(Color("Blue"))
+                        .foregroundColor(Color("Text"))
                     ForEach(game.players) {
                         player in
                         PrimaryButtonView(title: player.name, action: {
