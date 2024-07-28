@@ -10,10 +10,11 @@ import ConfettiSwiftUI
 
 #if os(tvOS)
 struct GameTableView: View {
-    @ObservedObject var game: Game
+//    @ObservedObject var game: Game
+    @EnvironmentObject var game: Game
     @State var showPickWinnerAlertSheet = false
-    @State var isShowingWinner = false
-
+    @State var chipGroupIndex = 0
+    
     var body: some View {
         ZStack {
             //game space
@@ -145,9 +146,23 @@ struct GameTableView: View {
             ForEach(game.players) {
                 player in
                 Button(player.name, action: {
-                    game.selectWinner(player: player)
-                    game.showingWinnerSelectModal.toggle()
+                    game.selectWinner(player: player, chipGroup: chipGroupIndex)
+                    
+                    if chipGroupIndex+1 >= game.chipGroups.count {
+                        game.showingWinnerSelectModal.toggle()
+                    }else {
+                        chipGroupIndex += 1
+                        showPickWinnerAlertSheet.toggle()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showPickWinnerAlertSheet = true
+                        }
+                        
+                    }
+//                    game.selectWinner(player: player)
+//                    game.showingWinnerSelectModal.toggle()
                 })
+                .disabled(!game.playerIndexCanWinRound(index: chipGroupIndex, player: player))
+                .opacity(game.playerIndexCanWinRound(index: chipGroupIndex, player: player) ? 1 : 0.4)
             }
             Button("Cancel", role: .cancel, action: {})
         }

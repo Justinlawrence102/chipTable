@@ -35,7 +35,11 @@ struct ManageGameView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 150)
                         .padding(24)
-                        .background(Color(UIColor.systemGray6))
+#if os(tvOS)
+                .background(Color("Card"))
+#else
+                .background(Color(UIColor.systemGray6))
+#endif
                         .cornerRadius(12)
                         .padding()
                     })
@@ -59,7 +63,11 @@ struct ManageGameView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 150)
                         .padding(24)
+#if os(tvOS)
+                        .background(Color("Card"))
+#else
                         .background(Color(UIColor.systemGray6))
+#endif
                         .cornerRadius(12)
                         .padding()
                     })

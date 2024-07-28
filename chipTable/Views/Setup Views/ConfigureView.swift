@@ -93,7 +93,8 @@ struct ConfigureView: View {
             LinearGradient(gradient: Gradient(colors: [Color("Blue").opacity(0.1), Color("Blue")]), startPoint: .top, endPoint: .bottom)
         )
         .sheet(isPresented: $isStartingGame) {
-            GameTableView(game: game)
+            GameTableView()
+                .environmentObject(game)
         }
     }
 }

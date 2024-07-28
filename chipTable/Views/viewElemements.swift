@@ -21,7 +21,11 @@ struct PrimaryButtonStyle: ButtonStyle {
 }
 
 struct SecondaryButtonStyle: ButtonStyle {
+#if os(tvOS)
+    var backgroundColor = Color("Card")
+#else
     var backgroundColor = Color(UIColor.systemGray6)
+#endif
     var titleColor = Color("Light Blue")
     
     func makeBody(configuration: Configuration) -> some View {
@@ -91,7 +95,11 @@ struct SecondaryButtonView: View{
                 .font(.body)
                 .frame(maxWidth: 350)
                 .frame(height: 55)
+#if os(tvOS)
+                .background(Color("Card"))
+#else
                 .background(Color(UIColor.systemGray6))
+#endif
                 .cornerRadius(12)
         }
 //        .buttonStyle(SecondaryButtonStyle())

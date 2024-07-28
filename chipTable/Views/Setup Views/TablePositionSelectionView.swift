@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+#if os(iOS)
 struct TablePositionSelectionView: View {
     @EnvironmentObject var game: Game
     @State var isStartingGame = false
@@ -102,7 +102,6 @@ struct TablePositionSelectionView: View {
     TablePositionSelectionView()
         .environmentObject(Game(withSampleData: true))
 }
-
 private struct SquareTappableView: View {
     let squareColor = Color(red: 0.243, green: 0.2901, blue: 0.345)
     let sort: Int
@@ -128,3 +127,4 @@ private struct SquareTappableView: View {
         
     }
 }
+#endif

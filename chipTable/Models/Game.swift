@@ -394,11 +394,11 @@ class Game: NSObject, ObservableObject {
 //                player.isMyTurn = true
 //            }
             var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, player: player, game: self)
-            if (currentPlayerIndex == player.orderIndex) {
-                gameDataToTransfer.gameState = .yourTurn
-            }
             if (newRound && player.currentBet != 0) {
                 gameDataToTransfer.gameState = .sentBlind
+            }
+            if (currentPlayerIndex == player.orderIndex) {
+                gameDataToTransfer.gameState = .yourTurn
             }
             do {
                 let data = try JSONEncoder().encode(gameDataToTransfer)

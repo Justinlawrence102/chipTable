@@ -97,8 +97,10 @@ struct PlayerPlayingView: View {
         }
         .background(Color("Blue"))
         .onShake {
+#if os(iOS)
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.warning)
+#endif
             goAllInAlertIsPresented.toggle()
         }
         .alert("Go All In?", isPresented: $goAllInAlertIsPresented){
