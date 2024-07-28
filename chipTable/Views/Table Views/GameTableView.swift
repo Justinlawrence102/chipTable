@@ -111,6 +111,17 @@ struct GameTableView: View {
             }
             .offset(y: 40)
         })
+        .overlay(alignment: .bottomTrailing, content: {
+            Button(action: {
+                game.sendData()
+            }) {
+                Image(systemName: "arrow.clockwise")
+                    .font(.system(size: 30))
+                    .frame(width: 60, height: 60)
+                    .foregroundColor(Color("Light Blue"))
+                    .cornerRadius(30)
+            }
+        })
 //        .overlay(alignment: .bottomTrailing, content: {
 //            if let players = game.get2dArrayOfPlayers() {
 //                VStack(spacing: -60.0) {
@@ -150,6 +161,7 @@ struct GameTableView: View {
                     
                     if chipGroupIndex+1 >= game.chipGroups.count {
                         game.showingWinnerSelectModal.toggle()
+                        chipGroupIndex = 0
                     }else {
                         chipGroupIndex += 1
                         showPickWinnerAlertSheet.toggle()

@@ -49,6 +49,9 @@ struct RoundSummaryView: View {
             }
             .buttonStyle(.card)
         }
+        .onAppear{
+            game.sendNewGameState(state: .endOfRoundSummary)
+        }
         .frame(maxWidth: 600)
         .padding([.leading, .bottom, .trailing])
         .padding(.top, -25)
