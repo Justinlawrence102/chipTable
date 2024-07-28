@@ -33,8 +33,8 @@ struct SelectWinnerView: View {
                                 
                             }
                         })
-                        .disabled(game.chipGroups.indices.contains(chipGroupIndex) ? !game.chipGroups[chipGroupIndex].avaiablePlayers.contains(player) : false)
-                        .opacity(game.chipGroups.indices.contains(chipGroupIndex) ? (game.chipGroups[chipGroupIndex].avaiablePlayers.contains(player) ? 1 : 0.4) : 1)
+                        .disabled(!game.playerIndexCanWinRound(index: chipGroupIndex, player: player))
+                        .opacity(game.playerIndexCanWinRound(index: chipGroupIndex, player: player) ? 1 : 0.4)
                     }
                     Spacer()
                 }

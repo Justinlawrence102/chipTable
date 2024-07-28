@@ -194,6 +194,7 @@ class PlayerGame: NSObject, ObservableObject {
         }
         return chipList
     }
+    var initalChipsBet = 0
     
     //mulipeer connectivity
     private let serviceType = "chipTable-serv"
@@ -223,6 +224,7 @@ class PlayerGame: NSObject, ObservableObject {
     }
     init(player: Player) {
         self.player = player
+        self.initalChipsBet = player.currentBet
         myPeerID = MCPeerID(displayName: UIDevice.current.name)
         
         session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .none)
@@ -345,6 +347,9 @@ class PlayerGame: NSObject, ObservableObject {
     }
     func fold() {
         player.folded = true
+        let chipsBetThisRound = player.currentBet - initalChipsBet
+        player.currentBet -= chipsBetThisRound
+        player.chipsRemaining += chipsBetThisRound
         sendChips()
     }
     
@@ -425,6 +430,7 @@ extension PlayerGame: MCSessionDelegate {
                 self.playerChipsRemainingList = playerData.playerChipsRemainingList
                 self.roundNumber = playerData.roundNumber
                 self.chipsOnTable = playerData.chipsOnTable
+                self.initalChipsBet = playerData.currentBet ?? 0
                 if self.gameState == .yourTurn {
                     self.isYourTurn = true
                 } else {

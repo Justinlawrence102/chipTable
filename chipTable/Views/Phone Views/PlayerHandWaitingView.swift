@@ -113,6 +113,19 @@ struct PlayerHandWaitingView: View {
                 WaitingForPlayerState()
             case .endOfRoundSummary:
                 EndOfRoundSummaryState()
+            case .sentBlind:
+                VStack(spacing: 24) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(Font(UIFont.systemFont(ofSize: 80)))
+                        .fontWeight(.semibold)
+                        .foregroundStyle(Color("Light Blue"))
+                    Text("Sent blind chips")
+                        .font(.headline)
+                        .foregroundColor(Color("Light Red"))
+                }
+                .padding()
+                .background(Color("Card"))
+                .cornerRadius(12)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

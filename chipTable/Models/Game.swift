@@ -151,6 +151,12 @@ class Game: NSObject, ObservableObject {
     func isDealer(player: Player)->Bool {
         return player.orderIndex == dealerIndex
     }
+    func playerIndexCanWinRound(index: Int, player: Player) -> Bool {
+        if chipGroups.indices.contains(index) {
+            return chipGroups[index].avaiablePlayers.contains(player) && !player.folded
+        }
+        return false
+    }
     
     func selectWinner(player: Player, chipGroup: Int) {
 //        var totalChipsOnTable = 0
@@ -269,7 +275,7 @@ class Game: NSObject, ObservableObject {
             }
             i += 1
         }
-        sendData()
+        sendData(newRound: true)
     }
     
     func nextPlayersTurn() {
@@ -381,7 +387,7 @@ class Game: NSObject, ObservableObject {
         }
     }
     
-    func sendData() {
+    func sendData(newRound: Bool = false) {
         for player in players {
             player.isMyTurn = isPlayingNow(player: player)
 //            if isPlayingNow(player: player) {
@@ -390,6 +396,9 @@ class Game: NSObject, ObservableObject {
             var gameDataToTransfer = PlayerInfoToTransfer(gameState: .waitingPlayers, player: player, game: self)
             if (currentPlayerIndex == player.orderIndex) {
                 gameDataToTransfer.gameState = .yourTurn
+            }
+            if (newRound && player.currentBet != 0) {
+                gameDataToTransfer.gameState = .sentBlind
             }
             do {
                 let data = try JSONEncoder().encode(gameDataToTransfer)
@@ -439,7 +448,7 @@ class Game: NSObject, ObservableObject {
 }
 
 enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
-    case waitingSetup, waitingPlayers, yourTurn, endOfGame, playerWon, pickTablePosition, endOfRoundSummary
+    case waitingSetup, waitingPlayers, yourTurn, endOfGame, playerWon, pickTablePosition, endOfRoundSummary, sentBlind
 
     var description : String {
         switch self {
@@ -450,6 +459,7 @@ enum GameState: String, CaseIterable, CustomStringConvertible, Codable {
         case .playerWon: return "playerOne"
         case .pickTablePosition: return "pickTablePosition"
         case .endOfRoundSummary: return "endOfRoundSummary"
+        case .sentBlind: return "Sent Blind"
         }
     }
 }
