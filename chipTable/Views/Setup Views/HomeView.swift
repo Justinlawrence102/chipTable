@@ -132,7 +132,7 @@ struct HomeView: View {
                 Button(action: {
                     showingTutorialSheet.toggle()
                 }, label: {
-                    Image(systemName: "questionmark.circle.fill")
+                    Image(systemName: "questionmark")
                         .foregroundStyle(Color("Light Blue"))
                 })
                 

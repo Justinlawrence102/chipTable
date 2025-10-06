@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		981D77A92E93422000249E19 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 981D77A82E93422000249E19 /* AppIcon.icon */; };
 		98501E9F2C3E1C6A001F432F /* DeviceShakeGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98501E9E2C3E1C6A001F432F /* DeviceShakeGesture.swift */; };
 		98501EA12C408EB2001F432F /* TablePositionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */; };
 		9856D6AD2C51B37000650162 /* ManageGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9856D6AC2C51B37000650162 /* ManageGameView.swift */; };
@@ -36,6 +37,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		981D77A82E93422000249E19 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		98501E9E2C3E1C6A001F432F /* DeviceShakeGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceShakeGesture.swift; sourceTree = "<group>"; };
 		98501EA02C408EB2001F432F /* TablePositionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TablePositionSelectionView.swift; sourceTree = "<group>"; };
 		9856D6AC2C51B37000650162 /* ManageGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageGameView.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 		98CD444F296753EB00680CEE /* chipTable */ = {
 			isa = PBXGroup;
 			children = (
+				981D77A82E93422000249E19 /* AppIcon.icon */,
 				98CD446A2967932E00680CEE /* Info.plist */,
 				98CD4450296753EB00680CEE /* chipTableApp.swift */,
 				98CD446B29685C2F00680CEE /* Views */,
@@ -249,6 +252,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				98CD4459296753EC00680CEE /* Preview Assets.xcassets in Resources */,
+				981D77A92E93422000249E19 /* AppIcon.icon in Resources */,
 				98CD4455296753EC00680CEE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
