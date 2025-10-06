@@ -236,6 +236,7 @@ class Game: NSObject, ObservableObject {
         //Reset min bets
         for player in players {
             player.currentBet = 0
+            player.hasPlayedThisRound = false
             player.folded = false
         }
         
@@ -313,42 +314,57 @@ class Game: NSObject, ObservableObject {
             nextPlayersTurn()
             return
         }
+        getCurrentPlayer().hasPlayedThisRound = true
         sendData()
     }
     func addChipsToTable(count: Int, player: Player) {
         withAnimation {
             let currentBiggestGroup = chipGroups.last!
-            print("Current Bet: \(getCurrentPlayer().currentBet), current wager on group: \(currentBiggestGroup.currentWager)")
-            if getCurrentPlayer().currentBet < currentBiggestGroup.currentWager && count != 0 {
+            print("Current Bet: \(getCurrentPlayer().currentBet), current wager is: \(currentBetOnTable)")
+            
+            var needsToSplitPot = false
+            var sizeOfSmallestNewPot = Int.max
+            for player in players {
+                var currentBetInPot = currentBiggestGroup.numChipsFromPlayer(player: player)
+                if player.isMyTurn {
+                    currentBetInPot += count
+                }
+                if (player.currentBet+player.chipsRemaining) < currentBetOnTable && (player.hasPlayedThisRound || player.chipsRemaining == 0) &&  currentBetInPot != 0 {
+                    print("\(player.name) has gone over...must split pot! \(player.currentBet) + \(player.chipsRemaining) < \(currentBetOnTable)")
+                    needsToSplitPot = true
+                    if currentBetInPot < sizeOfSmallestNewPot {
+                        sizeOfSmallestNewPot = currentBetInPot
+                    }
+                }
+            }
+            if needsToSplitPot && count != 0 {
                 print("This bet doesn't fit into this pot...make a new one!!!")
 
-//                print("Max Chips per player going into this pot: \(count)")
                 //the player is putting less than what's on the table. Reshuffle chip groups
                 let newPot = ChipGroup(chips: [], currentWager: currentBetOnTable)
                 let existingPot = ChipGroup(chips: [], currentWager: currentBetOnTable)
 
-                let numChipsWageredByCurrentPlayer = currentBiggestGroup.numChipsFromPlayer(player: player) + count
                 
                 for player in players {
-                    let numChipsInExisitingPot = currentBiggestGroup.numChipsFromPlayer(player: player)
-                    if numChipsInExisitingPot > numChipsWageredByCurrentPlayer {
-                        print("\(player.name) needs to put \(numChipsWageredByCurrentPlayer) in existing pot and \(numChipsInExisitingPot-numChipsWageredByCurrentPlayer) into the new pot")
-                        for _ in 0..<numChipsWageredByCurrentPlayer {
+                    var numChipsWageredByCurrentPlayer = currentBiggestGroup.numChipsFromPlayer(player: player)
+                    if player.isMyTurn {
+                        numChipsWageredByCurrentPlayer += count
+                    }
+                    print("player: \(player.name)")
+                    print("numChipsWageredByCurrentPlayer: \(numChipsWageredByCurrentPlayer)")
+                    print("Size of smallest new pot: \(sizeOfSmallestNewPot)")
+                    
+                    if numChipsWageredByCurrentPlayer > sizeOfSmallestNewPot {
+                        print("\(player.name) needs to put \(sizeOfSmallestNewPot) in existing pot and \(numChipsWageredByCurrentPlayer-sizeOfSmallestNewPot) into the new pot")
+                        for _ in 0..<sizeOfSmallestNewPot {
                             existingPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
                         }
-                        for _ in 0..<(numChipsInExisitingPot-numChipsWageredByCurrentPlayer) {
+                        for _ in 0..<(numChipsWageredByCurrentPlayer-sizeOfSmallestNewPot) {
                             newPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
                         }
-                        
-                    }else if player.isMyTurn {
-                        //numChipsInExisitingPot
-                        print("\(player.name) needs to put \(numChipsWageredByCurrentPlayer) into existing pot")
-                        for _ in 0..<numChipsWageredByCurrentPlayer {
-                            existingPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
-                        }
                     }else {
-                        print("\(player.name) needs to put \(numChipsInExisitingPot) into existing pot")
-                        for _ in 0..<numChipsInExisitingPot {
+                        print("\(player.name) needs to put \(numChipsWageredByCurrentPlayer) into existing pot. They will put 0 in the new pot")
+                        for _ in 0..<numChipsWageredByCurrentPlayer {
                             existingPot.chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: chipGroups.count+1))
                         }
                     }
@@ -505,11 +521,14 @@ extension Game: MCSessionDelegate {
                         self.currentBetOnTable = playerData.currentBetOnTable ?? 0
                     }
                     
-                    self.addChipsToTable(count: newChipsAdded, player: self.players[self.currentPlayerIndex])
-
                     if self.currentBetOnTable > previousHighestBet {
                         self.currentBettingLeaderIndex = self.currentPlayerIndex
+                        for player in self.players {
+                            player.hasPlayedThisRound = false
+                        }
                     }
+                    
+                    self.addChipsToTable(count: newChipsAdded, player: self.players[self.currentPlayerIndex])
     //                self.goToNextRound()
                     self.nextPlayersTurn()
                 }

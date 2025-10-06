@@ -17,6 +17,7 @@ class Player: NSObject, ObservableObject, Identifiable {
     @Published  var isMyTurn = false
     var folded = false
     @Published var chipsRemaining: Int
+    var hasPlayedThisRound = false
     var orderIndex = 0
     
     var pointPosition: CGPoint? = nil
