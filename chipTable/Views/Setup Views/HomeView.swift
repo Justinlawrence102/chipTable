@@ -119,6 +119,7 @@ struct HomeView: View {
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color("Light Red"))
                         .font(Font.system(size: 14, weight: .regular))
+                        .frame(width: 350)
                     
                 }
                 Spacer()
@@ -149,7 +150,7 @@ struct HomeView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
-            .previewInterfaceOrientation(.landscapeLeft)
+//            .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 

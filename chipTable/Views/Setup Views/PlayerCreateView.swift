@@ -111,7 +111,7 @@ struct PlayerCreateView: View {
                         xButton(dismiss: _dismiss)
                     }
                 })
-                
+#if !os(tvOS)
                 ToolbarItem(placement: .topBarTrailing, content: {
                     if #available(iOS 26.0, *) {
                         Button(action: {
@@ -126,6 +126,7 @@ struct PlayerCreateView: View {
                         .opacity(player.name == "" ? 0.5 : 1)
                     }
                 })
+#endif
             })
             .safeAreaPadding(.all)
             .fullScreenCover(isPresented: $isFindingGame) {

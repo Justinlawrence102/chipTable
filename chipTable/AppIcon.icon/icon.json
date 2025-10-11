@@ -17,7 +17,7 @@
   },
   "groups" : [
     {
-      "blur-material" : 1,
+      "blur-material" : null,
       "layers" : [
         {
           "image-name" : "heart.png",
@@ -31,12 +31,12 @@
       },
       "specular" : true,
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.42
+        "enabled" : false,
+        "value" : 0
       }
     },
     {
-      "blur-material" : 1,
+      "blur-material" : null,
       "hidden" : false,
       "layers" : [
         {
@@ -49,12 +49,12 @@
         "opacity" : 1
       },
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.42
+        "enabled" : false,
+        "value" : 0
       }
     },
     {
-      "blur-material" : 1,
+      "blur-material" : null,
       "hidden" : false,
       "layers" : [
         {
@@ -67,8 +67,8 @@
         "opacity" : 1
       },
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.42
+        "enabled" : false,
+        "value" : 0
       }
     }
   ],

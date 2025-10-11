@@ -256,14 +256,22 @@ class Game: NSObject, ObservableObject {
             }
             if players[i].chipsRemaining > 0 {
                 if !gaveSmallBlind {
-                    players[i].currentBet = minBet/2
-                    addChipsToTable(count: minBet/2, player: players[i])
+                    if players[i].chipsRemaining < minBet/2 {
+                        players[i].currentBet = players[i].chipsRemaining
+                    }else {
+                        players[i].currentBet = minBet/2
+                    }
+                    addChipsToTable(_count: players[i].currentBet, player: players[i])
                     players[i].chipsRemaining -= players[i].currentBet
                     gaveSmallBlind = true
                 }else if !gaveLargeBlind{
-                    players[i].currentBet = minBet
+                    if players[i].chipsRemaining < minBet {
+                        players[i].currentBet = players[i].chipsRemaining
+                    }else {
+                        players[i].currentBet = minBet
+                    }
                     currentBetOnTable = minBet
-                    addChipsToTable(count: minBet, player: players[i])
+                    addChipsToTable(_count: players[i].currentBet, player: players[i])
                     currentBettingLeaderIndex = i
 //                    currentPlayerIndex = i + 1
                     players[i].chipsRemaining -= players[i].currentBet
@@ -317,11 +325,32 @@ class Game: NSObject, ObservableObject {
         getCurrentPlayer().hasPlayedThisRound = true
         sendData()
     }
-    func addChipsToTable(count: Int, player: Player) {
+    func addChipsToTable(_count: Int, player: Player) {
+        var count = _count
         withAnimation {
             let currentBiggestGroup = chipGroups.last!
             print("Current Bet: \(getCurrentPlayer().currentBet), current wager is: \(currentBetOnTable)")
-            
+            if chipGroups.count > 1 {
+                //check all of the exisiting groups and make sure the player has contributed to each and that
+                if chipGroups[chipGroups.count-2].numChipsFromPlayer(player: player) != chipGroups[chipGroups.count-2].currentWager {
+                    //start with the first pot and if the player hasn't contributed to those pots, add the missing chips. Stop of the second to last beause the code below handles the most recent pot
+                    for index in 0...chipGroups.count-2 {
+                        let previousPot = chipGroups[index]
+                        if previousPot.numChipsFromPlayer(player: player) != previousPot.currentWager {
+                            var chipsInPreviousPot = previousPot.currentWager - previousPot.numChipsFromPlayer(player: player)
+                            print("This player needs to contibute to the previous pot first! \(previousPot.currentWager) - \(previousPot.numChipsFromPlayer(player: player)) = (\(chipsInPreviousPot))")
+                            if chipsInPreviousPot > count {
+                                print("The player doesn't have enough, so they will only contribute \(chipsInPreviousPot-count)")
+                                chipsInPreviousPot = chipsInPreviousPot-count
+                            }
+                            for _ in 0..<chipsInPreviousPot {
+                                chipGroups[index].chips.append(Chip(player: player, playerPosition: player.pointPosition ?? CGPoint(), numChipGroups: index+1))
+                            }
+                            count = count - chipsInPreviousPot
+                        }
+                    }
+                }
+            }
             var needsToSplitPot = false
             var sizeOfSmallestNewPot = Int.max
             for player in players {
@@ -350,7 +379,7 @@ class Game: NSObject, ObservableObject {
                     if player.isMyTurn {
                         numChipsWageredByCurrentPlayer += count
                     }
-                    print("player: \(player.name)")
+                    print("player: \(player.name) (\(player.isMyTurn))")
                     print("numChipsWageredByCurrentPlayer: \(numChipsWageredByCurrentPlayer)")
                     print("Size of smallest new pot: \(sizeOfSmallestNewPot)")
                     
@@ -370,6 +399,7 @@ class Game: NSObject, ObservableObject {
                     }
                 }
                 chipGroups.last?.chips = existingPot.chips
+                chipGroups.last?.currentWager = sizeOfSmallestNewPot
                 newPot.currentWager = currentBetOnTable
                 chipGroups.append(newPot)
             }else {
@@ -528,7 +558,7 @@ extension Game: MCSessionDelegate {
                         }
                     }
                     
-                    self.addChipsToTable(count: newChipsAdded, player: self.players[self.currentPlayerIndex])
+                    self.addChipsToTable(_count: newChipsAdded, player: self.players[self.currentPlayerIndex])
     //                self.goToNextRound()
                     self.nextPlayersTurn()
                 }
